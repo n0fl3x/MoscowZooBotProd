@@ -1,4 +1,3 @@
 /venv/
 /.idea/
 .env
-/msk_zoo_tg_bot/zoo_bot_db.sqlite3
