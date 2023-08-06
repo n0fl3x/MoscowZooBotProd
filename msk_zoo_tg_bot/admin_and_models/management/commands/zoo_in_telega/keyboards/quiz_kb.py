@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from admin_and_models.management.commands.zoo_in_telega.logic.quiz_output import answers
+from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import answers
 from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import CANCEL_COMMAND
 
 # CANCEL

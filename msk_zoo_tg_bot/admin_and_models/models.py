@@ -1,63 +1,6 @@
 from django.db import models
 
 
-# class Question(models.Model):
-#
-#     number = models.IntegerField(
-#         blank=False,
-#         unique=True,
-#         verbose_name='Порядковый номер вопроса',
-#         help_text='Порядковый номер НЕ должен совпадать с каким-либо другим номером вопроса',
-#     )
-#
-#     text = models.TextField(
-#         blank=False,
-#         verbose_name='Текст вопроса',
-#         help_text='Введите здесь текст вопроса (обязательное поле)',
-#     )
-#
-#     class Meta:
-#         verbose_name = 'Вопрос'
-#         verbose_name_plural = 'Вопросы'
-#
-#     def __str__(self):
-#         return f'{self.text}'
-#
-#
-# class Answer(models.Model):
-#
-#     to_question = models.ForeignKey(
-#         null=False,
-#         to='Question',
-#         on_delete=models.CASCADE,
-#         related_name='answer_to_question',
-#         help_text='К какому вопросу относится ответ (обязательное поле)',
-#     )
-#
-#     number = models.CharField(
-#         blank=False,
-#         max_length=8,
-#         unique=True,
-#         verbose_name='Идентификатор ответа',
-#         help_text='Введите здесь уникальный идентификатор ответа в формате:'
-#                   '<номер вопроса>.<номер ответа>.'
-#                   'Например для третьего ответа на второй вопрос идентификатором будет 2.3',
-#     )
-#
-#     text = models.TextField(
-#         blank=False,
-#         verbose_name='Ответ',
-#         help_text='Введите здесь текст ответа (обязательное поле)',
-#     )
-#
-#     class Meta:
-#         verbose_name = 'Ответ'
-#         verbose_name_plural = 'Ответы'
-#
-#     def __str__(self):
-#         return f'{self.text}'
-
-
 class Animal(models.Model):
 
     anim_name = models.CharField(
@@ -147,6 +90,11 @@ class Animal(models.Model):
 
 class Result(models.Model):
 
+    res_created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата результата',
+    )
+
     res_user_id = models.CharField(
         max_length=64,
         unique=True,
@@ -154,12 +102,9 @@ class Result(models.Model):
         help_text='Уникальный идентификатор пользователя в Telegram.',
     )
 
-    res_totem_animal = models.ForeignKey(
-        null=True,
-        to='Animal',
-        related_name='animal_results',
+    res_totem_animal = models.CharField(
+        max_length=128,
         verbose_name='Тотемное животное',
-        on_delete=models.CASCADE,
     )
 
     res_ans_list = models.TextField(
@@ -178,9 +123,13 @@ class Result(models.Model):
 
 class Feedback(models.Model):
 
-    fb_result = models.OneToOneField(
-        to='Result',
-        on_delete=models.CASCADE,
+    fb_created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата отзыва',
+    )
+
+    fb_result = models.CharField(
+        max_length=128,
         verbose_name='Результат',
     )
 

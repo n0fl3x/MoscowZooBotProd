@@ -5,15 +5,20 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from admin_and_models.management.commands.zoo_in_telega.logic.quiz_output import questions, answers
-
+from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import questions, answers
 from admin_and_models.management.commands.zoo_in_telega.bot_settings import bot
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import START_QUIZ_COMMAND, CANCEL_COMMAND
+from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import (
+    START_QUIZ_COMMAND,
+    CANCEL_COMMAND,
+    FEEDBACK_COMMAND,
+)
+
 from admin_and_models.management.commands.zoo_in_telega.filters.result_filters import get_totem_animal
+
 from admin_and_models.management.commands.zoo_in_telega.database.zoo_bot_db_config import (
-    check_user_db_record,
-    db_start,
+    check_user_result,
     get_all_animals_stats,
+    check_user_feedback,
 )
 
 from admin_and_models.management.commands.zoo_in_telega.filters.quiz_handlers_filters import (
@@ -39,6 +44,9 @@ from admin_and_models.management.commands.zoo_in_telega.texts.warnings_text impo
 from admin_and_models.management.commands.zoo_in_telega.texts.questions_text import (
     START_QUIZ_TEXT,
     END_MESSAGE,
+    START_FEEDBACK_STATE,
+    FEEDBACK_STATE_ALREADY,
+    BUSY_FOR_FEEDBACK,
 )
 
 from admin_and_models.management.commands.zoo_in_telega.keyboards.quiz_kb import (
@@ -68,6 +76,12 @@ class CurrentQuestion(StatesGroup):
     question_7 = State()
     question_8 = State()
     question_9 = State()
+
+
+class Feedback(StatesGroup):
+    """Класс для фиксации состояния ожидания отзыва от пользователя."""
+
+    feedback = State()
 
 
 async def cancel_command(message: types.Message, state: FSMContext) -> None:
@@ -115,7 +129,6 @@ async def animal_command(message: types.Message, state: FSMContext) -> None:
         await message.answer(text='Вы начали опрос заново.')
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} restarted quiz.')
 
-    await db_start()
     await message.answer(text=START_QUIZ_TEXT)
     await message.answer(
         text=questions[0],
@@ -136,7 +149,6 @@ async def process_question_1(callback_query: types.CallbackQuery, state: FSMCont
 
         if cur_state == 'CurrentQuestion:question_1':
             await bot.answer_callback_query(callback_query.id)
-            # await db_start()
             async with state.proxy() as data:
                 data['user_id'] = callback_query.from_user.id
                 data['1st_question'] = callback_query.data
@@ -515,8 +527,7 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
             data['9th_question'] = callback_query.data
             proxy_dict = data.as_dict()
             result = await get_totem_animal(proxy_dict=proxy_dict)
-        # TODO: разбить функцию записи на несколько для ускорения процесса
-        await check_user_db_record(state=state)
+        await check_user_result(state=state, animal=result.get('animal'))
         await bot.send_message(
             chat_id=callback_query.from_user.id,
             text=callback_query.data,
@@ -541,6 +552,50 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 9th question again in already finished quiz.')
+
+
+async def feedback_command(message: types.Message, state: FSMContext) -> None:
+    cur_state = await state.get_state()
+
+    if cur_state is None:
+        await message.answer(text=START_FEEDBACK_STATE)
+        await Feedback.feedback.set()
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete a new feedback.')
+    elif cur_state == 'Feedback:feedback':
+        await message.answer(text=FEEDBACK_STATE_ALREADY)
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete a new feedback '
+                     f'while already in a feedback state.')
+    else:
+        await message.answer(text=BUSY_FOR_FEEDBACK)
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete a new feedback '
+                     f'without finishing/cancelling current quiz.')
+
+
+async def process_feedback(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    username = message.from_user.username
+    text = message.text
+    process = await check_user_feedback(
+        user_id=user_id,
+        username=username,
+        text=text,
+    )
+    print(process)
+
+    if not process:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text='Вы ещё ни разу не прошли опрос.',
+        )
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to crete a new feedback '
+                     f'without at least once finished quiz.')
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text='Благодарим Вас за отзыв!',
+        )
+
+    await state.finish()
 
 
 # ---------------------
@@ -605,4 +660,13 @@ def register_quiz_handlers(disp: Dispatcher):
         process_question_9,
         question_filter_9,
         state='*',
+    )
+    disp.register_message_handler(
+        feedback_command,
+        commands=[f'{FEEDBACK_COMMAND}'],
+        state='*',
+    )
+    disp.register_message_handler(
+        process_feedback,
+        state=Feedback.feedback,
     )

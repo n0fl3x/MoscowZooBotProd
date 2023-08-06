@@ -1,5 +1,9 @@
 from admin_and_models.management.commands.zoo_in_telega.commands.static_commands import HELP_COMMAND
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import START_QUIZ_COMMAND, CANCEL_COMMAND
+from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import (
+    START_QUIZ_COMMAND,
+    CANCEL_COMMAND,
+    FEEDBACK_COMMAND,
+)
 
 
 START_QUIZ_TEXT = f"""
@@ -12,35 +16,36 @@ START_QUIZ_TEXT = f"""
 """
 
 
-QUESTION_1 = """
-Какой стихией Вы хотели бы управлять?
-"""
-
-
-QUESTION_2 = """
-Чем бы Вы предпочли перекусить?
-"""
-
-
-QUESTION_3 = """
-Какое Ваше любимое время дня?
-"""
-
-
-QUESTION_4 = """
-Какой у Вас характер?
-"""
-
-
-QUESTION_5 = """
-Какая погода Вам больше по-душе?
-"""
-
-
 END_MESSAGE = f"""
 Тест окончен.
 
 Если Вы хотите повторить тест, введите команду или нажмите /{START_QUIZ_COMMAND}
 
+Чтобы оставить отзыв о Вашем последнем результате опроса и о работе бота в целом, введите команду или нажмите /{FEEDBACK_COMMAND}
+
 Чтобы вывести список всех доступных команд, введите или нажмите /{HELP_COMMAND}
+"""
+
+
+START_FEEDBACK_STATE = """
+Спасибо, что решили оставить отзыв о Вашем результате и/или о работе нашего бота.
+Мы учитываем Ваши пожелания и работаем над улучшением качества.
+
+Оставьте Ваш отзыв одним сообщением в исключительно текстовом формате:
+"""
+
+
+FEEDBACK_STATE_ALREADY = """
+Бот уже ожидает Ваш отзыв. :)
+
+Спасибо, что решили оставить отзыв о Вашем результате и/или о работе нашего бота.
+Мы учитываем Ваши пожелания и работаем над улучшением качества.
+
+Оставьте Ваш отзыв одним сообщением в исключительно текстовом формате:
+"""
+
+
+BUSY_FOR_FEEDBACK = """
+Извините, но в данный момент Вы не можете оставить свой отзыв.
+Завершите или отмените текущий опрос.
 """
