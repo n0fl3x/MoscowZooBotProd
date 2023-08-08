@@ -3,13 +3,13 @@ import logging
 from datetime import datetime
 from aiogram import types, Dispatcher
 
-from admin_and_models.management.commands.zoo_in_telega.commands.static_commands import (
+from commands.static_commands import (
     START_COMMAND,
     HELP_COMMAND,
     CREATORS_COMMAND,
 )
 
-from admin_and_models.management.commands.zoo_in_telega.texts.static_commands_text import (
+from text_data.static_commands_text import (
     START_COMMAND_TEXT,
     HELP_COMMAND_TEXT,
     CREATORS_COMMAND_TEXT,

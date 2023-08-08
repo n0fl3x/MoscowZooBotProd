@@ -102,6 +102,14 @@ class Result(models.Model):
         help_text='Уникальный идентификатор пользователя в Telegram.',
     )
 
+    res_username = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        verbose_name='Имя пользователя',
+        help_text='Имя пользователя в Telegram, если оно задано.',
+    )
+
     res_totem_animal = models.CharField(
         max_length=128,
         verbose_name='Тотемное животное',
@@ -118,7 +126,9 @@ class Result(models.Model):
         verbose_name_plural = 'Результаты'
 
     def __str__(self):
-        return f'{self.res_user_id} = {self.res_totem_animal}'
+        if self.res_username:
+            return f'{self.res_username} ({self.res_username}) = {self.res_username}'
+        return f'{self.res_username} = {self.res_username}'
 
 
 class Feedback(models.Model):
@@ -157,6 +167,6 @@ class Feedback(models.Model):
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
-        if self.fb_username is not None:
+        if self.fb_username:
             return f'{self.fb_user_id} ({self.fb_username}) = {self.fb_text}'
         return f'{self.fb_user_id} = {self.fb_text}'

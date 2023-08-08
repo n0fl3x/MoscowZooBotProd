@@ -1,7 +1,7 @@
 from random import choice
 
-from admin_and_models.management.commands.zoo_in_telega.database.zoo_bot_db_config import get_all_animals_stats
-from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import answers
+from database.zoo_bot_db_config import get_all_animals_stats
+from text_data.quiz_q_and_a import answers
 
 
 async def get_totem_animal(proxy_dict: dict) -> dict:

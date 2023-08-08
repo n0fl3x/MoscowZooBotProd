@@ -1,5 +1,3 @@
-START_QUIZ_COMMAND = """animal"""
+START_QUIZ_COMMAND = """quiz"""
 
-CANCEL_COMMAND = """cancel"""
-
-FEEDBACK_COMMAND = """feedback"""
+CANCEL_QUIZ_COMMAND = """cancel_quiz"""

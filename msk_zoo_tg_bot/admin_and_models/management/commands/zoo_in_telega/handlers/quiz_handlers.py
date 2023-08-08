@@ -5,17 +5,12 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import questions, answers
-from admin_and_models.management.commands.zoo_in_telega.bot_settings import bot
-from admin_and_models.management.commands.zoo_in_telega.filters.result_filters import get_totem_animal
+from bot_settings import bot
+from filters.result_filters import get_totem_animal
+from keyboards.feedback_kb import inline_keyboard_cancel_feedback
+from text_data.quiz_q_and_a import questions, answers
 
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import (
-    START_QUIZ_COMMAND,
-    CANCEL_COMMAND,
-    FEEDBACK_COMMAND,
-)
-
-from admin_and_models.management.commands.zoo_in_telega.database.zoo_bot_db_config import (
+from database.zoo_bot_db_config import (
     check_user_result,
     delete_old_result,
     insert_new_result,
@@ -25,7 +20,38 @@ from admin_and_models.management.commands.zoo_in_telega.database.zoo_bot_db_conf
     insert_new_feedback,
 )
 
-from admin_and_models.management.commands.zoo_in_telega.filters.quiz_handlers_filters import (
+from commands.quiz_commands import (
+    START_QUIZ_COMMAND,
+    CANCEL_QUIZ_COMMAND,
+)
+
+from commands.feedback_commands import (
+    START_FEEDBACK_COMMAND,
+    CANCEL_FEEDBACK_COMMAND,
+)
+
+from text_data.quiz_messages_text import (
+    QUIZ_START_TEXT,
+    QUIZ_COMPLETE_TEXT,
+    QUIZ_STATE_CANCEL_COMMAND_TEXT,
+    QUIZ_CANCEL_NONE_STATE_TEXT,
+    QUIZ_ALREADY_ANSWERED_TEXT,
+    QUIZ_ALREADY_FINISHED_TEXT,
+    QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
+    QUIZ_RESTART_TEXT,
+)
+
+from text_data.feedback_messages_text import (
+    START_FEEDBACK_STATE,
+    BUSY_FOR_FEEDBACK,
+    FEEDBACK_STATE_ALREADY,
+    FEEDBACK_CANCEL_NONE_STATE_TEXT,
+    FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
+    FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
+    DONT_UNDERSTAND_FEEDBACK,
+)
+
+from filters.quiz_handlers_filters import (
     cancel_quiz_inline_btn_filter,
     cancel_feedback_inline_btn_filter,
     question_filter_1,
@@ -39,22 +65,7 @@ from admin_and_models.management.commands.zoo_in_telega.filters.quiz_handlers_fi
     question_filter_9,
 )
 
-from admin_and_models.management.commands.zoo_in_telega.texts.warnings_text import (
-    NOT_NONE_STATE_CANCEL_COMMAND_TEXT,
-    NONE_STATE_CANCEL_COMMAND_TEXT,
-    ALREADY_ANSWERED,
-    ALREADY_FINISHED,
-)
-
-from admin_and_models.management.commands.zoo_in_telega.texts.questions_text import (
-    START_QUIZ_TEXT,
-    END_MESSAGE,
-    START_FEEDBACK_STATE,
-    FEEDBACK_STATE_ALREADY,
-    BUSY_FOR_FEEDBACK,
-)
-
-from admin_and_models.management.commands.zoo_in_telega.keyboards.quiz_kb import (
+from keyboards.quiz_kb import (
     inline_keyboard_1,
     inline_keyboard_2,
     inline_keyboard_3,
@@ -64,12 +75,11 @@ from admin_and_models.management.commands.zoo_in_telega.keyboards.quiz_kb import
     inline_keyboard_7,
     inline_keyboard_8,
     inline_keyboard_9,
-    inline_keyboard_cancel_feedback,
 )
 
 
-# -------------
-# Quiz handlers
+# --------------
+# States classes
 class CurrentQuestion(StatesGroup):
     """Класс для фиксации состояний ожидания ответа на определённый по счёту вопрос."""
 
@@ -84,26 +94,34 @@ class CurrentQuestion(StatesGroup):
     question_9 = State()
 
 
+class Feedback(StatesGroup):
+    """Класс для фиксации состояния ожидания отзыва от пользователя."""
+
+    feedback = State()
+
+
+# -------------
+# Quiz handlers
 async def cancel_quiz_command(message: types.Message, state: FSMContext) -> None:
     """Функция-обработчик команды /cancel, введённой вручную. Останавливает текущий опрос."""
 
     current_state = await state.get_state()
 
     if current_state is None:
-        await message.answer(text=NONE_STATE_CANCEL_COMMAND_TEXT)
+        await message.answer(text=QUIZ_CANCEL_NONE_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel quiz '
-                     f'at empty state by /cancel command.')
+                     f'at empty state by command.')
 
     elif current_state == 'Feedback:feedback':
-        await message.answer(text='Вы сейчас оставляете отзыв, а не проходите опрос.')
+        await message.answer(text=QUIZ_CANCEL_FEEDBACK_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
-                     f'quiz at {current_state} state by /cancel command.')
+                     f'quiz at {current_state} state by command.')
 
     else:
-        await message.answer(text=NOT_NONE_STATE_CANCEL_COMMAND_TEXT)
+        await message.answer(text=QUIZ_STATE_CANCEL_COMMAND_TEXT)
         await state.reset_state()
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} cancelled '
-                     f'quiz at {current_state} state by /cancel command.')
+                     f'quiz at {current_state} state by command.')
 
 
 async def cancel_quiz_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
@@ -113,70 +131,23 @@ async def cancel_quiz_inline_button(callback: types.CallbackQuery, state: FSMCon
     await callback.answer()
 
     if current_state is None:
-        await callback.message.answer(text=NONE_STATE_CANCEL_COMMAND_TEXT)
+        await callback.message.answer(text=QUIZ_CANCEL_NONE_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel quiz '
                      f'at empty state by inline button.')
 
     elif current_state == 'Feedback:feedback':
-        await callback.message.answer(text='Вы сейчас оставляете отзыв, а не проходите опрос.')
+        await callback.message.answer(text=QUIZ_CANCEL_FEEDBACK_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
                      f'quiz at {current_state} state by inline button.')
 
     else:
-        await callback.message.answer(text=NOT_NONE_STATE_CANCEL_COMMAND_TEXT)
+        await callback.message.answer(text=QUIZ_STATE_CANCEL_COMMAND_TEXT)
         await state.reset_state()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} cancelled '
                      f'quiz at {current_state} state by inline button command.')
 
 
-async def cancel_feedback_command(message: types.Message, state: FSMContext) -> None:
-    """Функция-обработчик команды /no_feedback, введённой вручную.
-    Отменяет состояние ожидания отзыва."""
-
-    current_state = await state.get_state()
-
-    if current_state is None:
-        await message.answer(text='Бот и так не ожидал Вашего отзыва.')
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
-                     f'feedback at empty state by /no_feedback command.')
-
-    elif current_state == 'Feedback:feedback':
-        await message.answer(text='Вы передумали оставлять отзыва.')
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} canceled '
-                     f'feedback state by /no_feedback command.')
-
-    else:
-        await message.answer(text='Вы ведь проходите опрос, а не оставляли отзыв.')
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
-                     f'feedback at {current_state} state by /no_feedback command.')
-
-
-async def cancel_feedback_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
-    """Функция-обработчик команды /no_feedback, вызванная через инлайн-кнопку.
-    Отменяет состояние ожидания отзыва."""
-
-    current_state = await state.get_state()
-    await callback.answer()
-
-    if current_state is None:
-        await callback.message.answer(text='Бот и так не ожидал Вашего отзыва.')
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
-                     f'feedback at empty state by inline button.')
-
-    elif current_state == 'Feedback:feedback':
-        await callback.message.answer(text='Вы передумали оставлять отзыва.')
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} canceled '
-                     f'feedback state by inline button.')
-
-    else:
-        await callback.message.answer(text='Вы ведь проходите опрос, а не оставляли отзыв.')
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
-                     f'feedback at {current_state} state by inline button.')
-
-
-async def animal_command(message: types.Message, state: FSMContext) -> None:
+async def start_quiz_command(message: types.Message, state: FSMContext) -> None:
     """Функция-обработчик команды запуска опроса."""
 
     current_state = await state.get_state()
@@ -184,10 +155,10 @@ async def animal_command(message: types.Message, state: FSMContext) -> None:
     if current_state is None:
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} started new quiz.')
     else:
-        await message.answer(text='Вы начали опрос заново.')
+        await message.answer(text=QUIZ_RESTART_TEXT)
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} restarted quiz.')
 
-    await message.answer(text=START_QUIZ_TEXT)
+    await message.answer(text=QUIZ_START_TEXT)
     await message.answer(
         text=questions[0],
         reply_markup=inline_keyboard_1
@@ -227,7 +198,7 @@ async def process_question_1(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 1st question again in current quiz.')
@@ -236,7 +207,7 @@ async def process_question_1(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 1st question again in already finished quiz.')
@@ -274,7 +245,7 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 2nd question again in current quiz.')
@@ -283,7 +254,7 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 2nd question again in already finished quiz.')
@@ -321,7 +292,7 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 3rd question again in current quiz.')
@@ -330,7 +301,7 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 3rd question again in already finished quiz.')
@@ -368,7 +339,7 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 4th question again in current quiz.')
@@ -377,7 +348,7 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 4th question again in already finished quiz.')
@@ -414,7 +385,7 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 5th question again in current quiz.')
@@ -423,7 +394,7 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 5th question again in already finished quiz.')
@@ -460,7 +431,7 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 6th question again in current quiz.')
@@ -469,7 +440,7 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 6th question again in already finished quiz.')
@@ -507,7 +478,7 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 7th question again in current quiz.')
@@ -516,7 +487,7 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 7th question again in already finished quiz.')
@@ -554,7 +525,7 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_ANSWERED}',
+                text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 8th question again in current quiz.')
@@ -563,7 +534,7 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
             await bot.answer_callback_query(callback_query.id)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f'{ALREADY_FINISHED}',
+                text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
             )
             logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                          f'answer ({callback_query.data}) the 8th question again in already finished quiz.')
@@ -607,27 +578,21 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
         )
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=END_MESSAGE,
+            text=QUIZ_COMPLETE_TEXT,
         )
 
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f'{ALREADY_FINISHED}',
+            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 9th question again in already finished quiz.')
 
 
-# -------------
+# -----------------
 # Feedback handlers
-class Feedback(StatesGroup):
-    """Класс для фиксации состояния ожидания отзыва от пользователя."""
-
-    feedback = State()
-
-
 async def feedback_command(message: types.Message, state: FSMContext) -> None:
     """Функция активации состояния ожидания отзыва."""
 
@@ -653,6 +618,53 @@ async def feedback_command(message: types.Message, state: FSMContext) -> None:
         await message.answer(text=BUSY_FOR_FEEDBACK)
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete a new feedback '
                      f'without finishing/cancelling current quiz.')
+
+
+async def cancel_feedback_command(message: types.Message, state: FSMContext) -> None:
+    """Функция-обработчик команды /no_feedback, введённой вручную.
+    Отменяет состояние ожидания отзыва."""
+
+    current_state = await state.get_state()
+
+    if current_state is None:
+        await message.answer(text=FEEDBACK_CANCEL_NONE_STATE_TEXT)
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
+                     f'feedback at empty state by command.')
+
+    elif current_state == 'Feedback:feedback':
+        await message.answer(text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT)
+        await state.reset_state()
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} canceled '
+                     f'feedback state by command.')
+
+    else:
+        await message.answer(text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT)
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
+                     f'feedback at {current_state} state by command.')
+
+
+async def cancel_feedback_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
+    """Функция-обработчик команды /no_feedback, вызванная через инлайн-кнопку.
+    Отменяет состояние ожидания отзыва."""
+
+    current_state = await state.get_state()
+    await callback.answer()
+
+    if current_state is None:
+        await callback.message.answer(text=FEEDBACK_CANCEL_NONE_STATE_TEXT)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
+                     f'feedback at empty state by inline button.')
+
+    elif current_state == 'Feedback:feedback':
+        await callback.message.answer(text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT)
+        await state.reset_state()
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} canceled '
+                     f'feedback state by inline button.')
+
+    else:
+        await callback.message.answer(text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
+                     f'feedback at {current_state} state by inline button.')
 
 
 async def process_feedback(message: types.Message, state: FSMContext) -> None:
@@ -683,7 +695,7 @@ async def process_feedback(message: types.Message, state: FSMContext) -> None:
     else:
         await bot.send_message(
             chat_id=message.chat.id,
-            text='Я понимаю только текст. Попробуйте ещё раз.',
+            text=DONT_UNDERSTAND_FEEDBACK,
         )
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete invalid feedback '
                      f'with {message.content_type} type.')
@@ -693,28 +705,18 @@ async def process_feedback(message: types.Message, state: FSMContext) -> None:
 # Handlers registration
 def register_quiz_handlers(disp: Dispatcher) -> None:
     disp.register_message_handler(
-        cancel_quiz_command,
-        commands=[f'{CANCEL_COMMAND}'],
+        start_quiz_command,
+        commands=[f'{START_QUIZ_COMMAND}'],
         state='*',
     )
     disp.register_message_handler(
-        cancel_feedback_command,
-        commands=[f'no_feedback'],
+        cancel_quiz_command,
+        commands=[f'{CANCEL_QUIZ_COMMAND}'],
         state='*',
     )
     disp.register_callback_query_handler(
         cancel_quiz_inline_button,
         cancel_quiz_inline_btn_filter,
-        state='*',
-    )
-    disp.register_callback_query_handler(
-        cancel_feedback_inline_button,
-        cancel_feedback_inline_btn_filter,
-        state='*',
-    )
-    disp.register_message_handler(
-        animal_command,
-        commands=[f'{START_QUIZ_COMMAND}'],
         state='*',
     )
     disp.register_callback_query_handler(
@@ -764,11 +766,21 @@ def register_quiz_handlers(disp: Dispatcher) -> None:
     )
     disp.register_message_handler(
         feedback_command,
-        commands=[f'{FEEDBACK_COMMAND}'],
+        commands=[f'{START_FEEDBACK_COMMAND}'],
         state='*',
     )
     disp.register_message_handler(
         process_feedback,
         content_types=types.ContentTypes.ANY,
         state=Feedback.feedback,
+    )
+    disp.register_message_handler(
+        cancel_feedback_command,
+        commands=[f'{CANCEL_FEEDBACK_COMMAND}'],
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        cancel_feedback_inline_button,
+        cancel_feedback_inline_btn_filter,
+        state='*',
     )

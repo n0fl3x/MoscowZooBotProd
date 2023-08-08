@@ -1,9 +1,9 @@
-from admin_and_models.management.commands.zoo_in_telega.commands.static_commands import (
+from commands.static_commands import (
     HELP_COMMAND,
     CREATORS_COMMAND,
 )
 
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import START_QUIZ_COMMAND
+from commands.quiz_commands import START_QUIZ_COMMAND
 
 
 START_COMMAND_TEXT = f"""

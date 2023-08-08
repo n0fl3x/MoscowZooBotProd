@@ -1,6 +1,7 @@
 import logging
 import os
 import sqlite3 as sql
+
 from datetime import datetime
 from aiogram.dispatcher.storage import FSMContext
 
@@ -46,6 +47,7 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
         else:
             record_id = 1
 
+        username = data.get('username')
         created_at = datetime.now()
         user_id = str(data.get('user_id'))
         user_results = data.get('1st_question') + ", " \
@@ -58,15 +60,16 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
             + data.get('8th_question') + ", " \
             + data.get('9th_question')
 
-        to_insert = (record_id, created_at, user_id, animal, user_results)
-        print(to_insert)
+        to_insert = (record_id, created_at, user_id, username, animal, user_results)
+
         curs.execute(
             """INSERT INTO 'admin_and_models_result'
-            VALUES (?, ?, ?, ?, ?)""",
+            VALUES (?, ?, ?, ?, ?, ?)""",
             to_insert,
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : New result of user with ID {user_id} successfully added to database.')
+        logging.info(f' {datetime.now()} : New result of user with ID {user_id} and username = {username}'
+                     f'successfully added to database.')
 
 
 async def delete_old_result(state: FSMContext) -> None:
@@ -133,7 +136,8 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
         to_insert,
     )
     connect.commit()
-    logging.info(f' {datetime.now()} : New feedback successfully added to database.')
+    logging.info(f' {datetime.now()} : New feedback of user with ID {user_id} and username = {username}'
+                 f'successfully added to database.')
 
 
 async def delete_old_feedback(user_id: int) -> None:

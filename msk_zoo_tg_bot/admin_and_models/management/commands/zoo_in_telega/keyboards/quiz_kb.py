@@ -1,23 +1,14 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import answers
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import CANCEL_COMMAND
+from text_data.quiz_q_and_a import answers
+from commands.quiz_commands import CANCEL_QUIZ_COMMAND
 
 
 # CANCEL QUIZ
 inline_btn_cancel_quiz = InlineKeyboardButton(
     text='Остановить опрос',
-    callback_data=f'/{CANCEL_COMMAND}',
+    callback_data=f'/{CANCEL_QUIZ_COMMAND}',
 )
-
-
-# CANCEL FEEDBACK
-inline_btn_cancel_feedback = InlineKeyboardButton(
-    text='Не хочу оставлять отзыв',
-    callback_data=f'/no_feedback'
-)
-
-inline_keyboard_cancel_feedback = InlineKeyboardMarkup().row(inline_btn_cancel_feedback)
 
 
 # QUESTION 1

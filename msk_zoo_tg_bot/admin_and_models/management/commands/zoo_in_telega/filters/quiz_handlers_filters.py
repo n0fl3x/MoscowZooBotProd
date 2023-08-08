@@ -1,6 +1,7 @@
 from aiogram import types
 
-from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import CANCEL_COMMAND
+from commands.feedback_commands import CANCEL_FEEDBACK_COMMAND
+from commands.quiz_commands import CANCEL_QUIZ_COMMAND
 
 
 """
@@ -10,12 +11,12 @@ from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands i
 
 
 async def cancel_quiz_inline_btn_filter(callback_query: types.CallbackQuery):
-    if callback_query.data == f'/{CANCEL_COMMAND}':
+    if callback_query.data == f'/{CANCEL_QUIZ_COMMAND}':
         return callback_query
 
 
 async def cancel_feedback_inline_btn_filter(callback_query: types.CallbackQuery):
-    if callback_query.data == '/no_feedback':
+    if callback_query.data == f'/{CANCEL_FEEDBACK_COMMAND}':
         return callback_query
 
 
