@@ -12,7 +12,8 @@ curs = connect.cursor()
 
 
 async def get_all_animals_stats() -> dict:
-    """Функция для получения словаря с названиями всех животных из БД и только их коэффициентов."""
+    """Функция для получения словаря с названиями всех животных из БД и только их коэффициентов
+    для использования при определении результата опроса."""
 
     all_animals = curs.execute(
         """SELECT * 
@@ -29,7 +30,7 @@ async def get_all_animals_stats() -> dict:
     return animals_with_stats
 
 
-async def insert_new_results(state: FSMContext, animal: str):
+async def insert_new_result(state: FSMContext, animal: str) -> None:
     """Функция для вставки новой записи с результатами опроса,
     если пользователь впервые его проходит."""
 
@@ -38,14 +39,15 @@ async def insert_new_results(state: FSMContext, animal: str):
             """SELECT max(id) 
             FROM 'admin_and_models_result'"""
         ).fetchone()[0]
+        connect.commit()
 
-        if record_id is not None:
+        if record_id:
             record_id += 1
         else:
             record_id = 1
 
         created_at = datetime.now()
-        user = str(data.get('user_id'))
+        user_id = str(data.get('user_id'))
         user_results = data.get('1st_question') + ", " \
             + data.get('2nd_question') + ", " \
             + data.get('3rd_question') + ", " \
@@ -56,17 +58,18 @@ async def insert_new_results(state: FSMContext, animal: str):
             + data.get('8th_question') + ", " \
             + data.get('9th_question')
 
-        to_insert = (record_id, created_at, user, animal, user_results)
+        to_insert = (record_id, created_at, user_id, animal, user_results)
+        print(to_insert)
         curs.execute(
             """INSERT INTO 'admin_and_models_result'
             VALUES (?, ?, ?, ?, ?)""",
             to_insert,
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : New result successfully added to database.')
+        logging.info(f' {datetime.now()} : New result of user with ID {user_id} successfully added to database.')
 
 
-async def delete_old_results(state: FSMContext, animal: str):
+async def delete_old_result(state: FSMContext) -> None:
     """Функция, удаляющая существующую запись с результатами опроса,
     если пользователь его уже проходил."""
 
@@ -77,14 +80,10 @@ async def delete_old_results(state: FSMContext, animal: str):
             WHERE res_user_id = '{user_id}'"""
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : Old result successfully deleted from database.')
-        await insert_new_results(
-            state=state,
-            animal=animal,
-        )
+        logging.info(f' {datetime.now()} : Old result of user with ID {user_id} successfully deleted from database.')
 
 
-async def check_user_result(state: FSMContext, animal: str):
+async def check_user_result(state: FSMContext) -> bool:
     """Функция для проверки проходил ли уже текущий пользователь опрос хотя бы один раз."""
 
     async with state.proxy() as data:
@@ -93,34 +92,26 @@ async def check_user_result(state: FSMContext, animal: str):
             f"""SELECT * 
             FROM 'admin_and_models_result' 
             WHERE res_user_id = '{user_id}'"""
-        )
+        ).fetchone()
+        connect.commit()
 
-        if not result:
-            await insert_new_results(
-                state=state,
-                animal=animal,
-            )
-        else:
-            await delete_old_results(
-                state=state,
-                animal=animal,
-            )
+        if result:
+            return True
+        return False
 
 
-async def insert_new_feedback(user_id: int, username: str, text: str):
+async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
     """Функция для добавления нового отзыва в БД."""
 
     fb_id = curs.execute(
         """SELECT max(id) 
         FROM 'admin_and_models_feedback'"""
     ).fetchone()[0]
-    print(fb_id)
 
     if fb_id is not None:
         fb_id += 1
     else:
         fb_id = 1
-    print(fb_id)
 
     created_at = datetime.now()
     user_result = curs.execute(
@@ -128,16 +119,13 @@ async def insert_new_feedback(user_id: int, username: str, text: str):
         FROM 'admin_and_models_result' 
         WHERE res_user_id = '{user_id}'"""
     ).fetchone()
-    print(user_result)
 
     if not user_result:
         return
     else:
         animal = user_result[0]
-        print(animal)
 
     to_insert = (fb_id, created_at, animal, user_id, username, text)
-    print(to_insert)
 
     curs.execute(
         """INSERT INTO 'admin_and_models_feedback'
@@ -148,23 +136,18 @@ async def insert_new_feedback(user_id: int, username: str, text: str):
     logging.info(f' {datetime.now()} : New feedback successfully added to database.')
 
 
-async def delete_old_feedback(user_id: int, username: str, text: str):
+async def delete_old_feedback(user_id: int) -> None:
     """Функция для удаления уже существующего отзыва пользователя из БД."""
 
     curs.execute(
         f"""DELETE FROM 'admin_and_models_feedback' 
-                WHERE fb_user_id = '{user_id}'"""
+        WHERE fb_user_id = '{user_id}'"""
     )
     connect.commit()
     logging.info(f' {datetime.now()} : Old feedback successfully deleted from database.')
-    await insert_new_feedback(
-        user_id=user_id,
-        username=username,
-        text=text,
-    )
 
 
-async def check_user_feedback(user_id: int, username: str, text: str):
+async def check_user_feedback(user_id: int):
     """Функция для проверки наличия отзыва от текущего пользователя."""
 
     fb = curs.execute(
@@ -172,17 +155,8 @@ async def check_user_feedback(user_id: int, username: str, text: str):
         FROM 'admin_and_models_feedback' 
         WHERE fb_user_id = '{user_id}'"""
     ).fetchone()
+    connect.commit()
 
-    if not fb:
-        await insert_new_feedback(
-            user_id=user_id,
-            username=username,
-            text=text,
-        )
-        return 'kek'
-    else:
-        await delete_old_feedback(
-            user_id=user_id,
-            username=username,
-            text=text,
-        )
+    if fb:
+        return True
+    return False

@@ -9,8 +9,13 @@ from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands i
 """
 
 
-async def cancel_inline_btn_filter(callback_query: types.CallbackQuery):
+async def cancel_quiz_inline_btn_filter(callback_query: types.CallbackQuery):
     if callback_query.data == f'/{CANCEL_COMMAND}':
+        return callback_query
+
+
+async def cancel_feedback_inline_btn_filter(callback_query: types.CallbackQuery):
+    if callback_query.data == '/no_feedback':
         return callback_query
 
 

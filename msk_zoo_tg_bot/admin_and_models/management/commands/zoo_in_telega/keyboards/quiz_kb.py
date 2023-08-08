@@ -3,11 +3,22 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from admin_and_models.management.commands.zoo_in_telega.quiz_data.quiz_output import answers
 from admin_and_models.management.commands.zoo_in_telega.commands.quiz_commands import CANCEL_COMMAND
 
-# CANCEL
-inline_btn_cancel = InlineKeyboardButton(
+
+# CANCEL QUIZ
+inline_btn_cancel_quiz = InlineKeyboardButton(
     text='Остановить опрос',
     callback_data=f'/{CANCEL_COMMAND}',
 )
+
+
+# CANCEL FEEDBACK
+inline_btn_cancel_feedback = InlineKeyboardButton(
+    text='Не хочу оставлять отзыв',
+    callback_data=f'/no_feedback'
+)
+
+inline_keyboard_cancel_feedback = InlineKeyboardMarkup().row(inline_btn_cancel_feedback)
+
 
 # QUESTION 1
 inline_btn_1_1 = InlineKeyboardButton(
@@ -35,7 +46,7 @@ inline_keyboard_1 = InlineKeyboardMarkup().\
     row(inline_btn_1_2).\
     row(inline_btn_1_3).\
     row(inline_btn_1_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 2
@@ -64,7 +75,7 @@ inline_keyboard_2 = InlineKeyboardMarkup().\
     row(inline_btn_2_2).\
     row(inline_btn_2_3).\
     row(inline_btn_2_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 3
@@ -93,7 +104,7 @@ inline_keyboard_3 = InlineKeyboardMarkup().\
     row(inline_btn_3_2).\
     row(inline_btn_3_3).\
     row(inline_btn_3_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 4
@@ -122,7 +133,7 @@ inline_keyboard_4 = InlineKeyboardMarkup().\
     row(inline_btn_4_2).\
     row(inline_btn_4_3).\
     row(inline_btn_4_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 5
@@ -145,7 +156,7 @@ inline_keyboard_5 = InlineKeyboardMarkup().\
     row(inline_btn_5_1).\
     row(inline_btn_5_2).\
     row(inline_btn_5_3).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 6
@@ -168,7 +179,7 @@ inline_keyboard_6 = InlineKeyboardMarkup().\
     row(inline_btn_6_1).\
     row(inline_btn_6_2).\
     row(inline_btn_6_3).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 7
@@ -197,7 +208,7 @@ inline_keyboard_7 = InlineKeyboardMarkup().\
     row(inline_btn_7_2).\
     row(inline_btn_7_3).\
     row(inline_btn_7_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 8
@@ -226,7 +237,7 @@ inline_keyboard_8 = InlineKeyboardMarkup().\
     row(inline_btn_8_2).\
     row(inline_btn_8_3).\
     row(inline_btn_8_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
 
 
 # QUESTION 9
@@ -255,4 +266,4 @@ inline_keyboard_9 = InlineKeyboardMarkup().\
     row(inline_btn_9_2).\
     row(inline_btn_9_3).\
     row(inline_btn_9_4).\
-    row(inline_btn_cancel)
+    row(inline_btn_cancel_quiz)
