@@ -3,11 +3,29 @@ from django.db import models
 
 class Animal(models.Model):
 
-    anim_name = models.CharField(
+    female = 1
+    male = 0
+    GENDERS = [
+        (female, 'Самка'),
+        (male, 'Самец'),
+    ]
+
+    anim_animal = models.CharField(
         max_length=128,
         unique=True,
         verbose_name='Название животного',
         help_text='Максимум 128 символов.',
+    )
+
+    anim_name = models.CharField(
+        max_length=128,
+        verbose_name='Кличка животного',
+        help_text='Как зовут это животное в Московском зоопарке?',
+    )
+
+    anim_gender = models.IntegerField(
+        choices=GENDERS,
+        default=female,
     )
 
     anim_image = models.TextField(
@@ -85,7 +103,7 @@ class Animal(models.Model):
         verbose_name_plural = 'Животные'
 
     def __str__(self):
-        return f'{self.anim_name}'
+        return f'{self.anim_animal} ({self.anim_name})'
 
 
 class Result(models.Model):
@@ -127,8 +145,8 @@ class Result(models.Model):
 
     def __str__(self):
         if self.res_username:
-            return f'{self.res_username} ({self.res_username}) = {self.res_username}'
-        return f'{self.res_username} = {self.res_username}'
+            return f'ID {self.res_user_id} ({self.res_username}) = {self.res_totem_animal}'
+        return f'ID {self.res_user_id} = {self.res_totem_animal}'
 
 
 class Feedback(models.Model):
@@ -168,5 +186,5 @@ class Feedback(models.Model):
 
     def __str__(self):
         if self.fb_username:
-            return f'{self.fb_user_id} ({self.fb_username}) = {self.fb_text}'
-        return f'{self.fb_user_id} = {self.fb_text}'
+            return f'ID {self.fb_user_id} ({self.fb_username}) = {self.fb_text}'
+        return f'ID {self.fb_user_id} = {self.fb_text}'

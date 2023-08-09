@@ -8,6 +8,9 @@ async def get_totem_animal(proxy_dict: dict) -> dict:
     chat_id = proxy_dict.get('user_id')
     proxy_dict.pop('user_id')
 
+    username = proxy_dict.get('username')
+    proxy_dict.pop('username')
+
     params = {
         'суточная активность': 0,
         'тип питания': 0,
@@ -139,11 +142,13 @@ async def get_totem_animal(proxy_dict: dict) -> dict:
     if len(best_animals) == 1:
         result = {
             'chat_id': chat_id,
+            'username': username,
             'animal': list(best_animals.keys())[0],
         }
     else:
         result = {
             'chat_id': chat_id,
+            'username': username,
             'animal': choice(list(best_animals.keys())),
         }
 

@@ -40,3 +40,13 @@ FEEDBACK_CANCEL_QUIZ_STATE_TEXT = """
 DONT_UNDERSTAND_FEEDBACK = """
 Я понимаю только текст. Попробуйте ещё раз.
 """
+
+
+THANK_YOU_FOR_FEEDBACK = """
+Благодарим Вас за отзыв.
+"""
+
+
+CANT_FEEDBACK_WITHOUT_QUIZ = """
+Вы ещё ни разу не проходили опрос. Сделайте это, чтобы оставить отзыв.
+"""

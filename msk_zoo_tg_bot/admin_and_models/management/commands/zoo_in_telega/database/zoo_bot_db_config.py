@@ -23,10 +23,10 @@ async def get_all_animals_stats() -> dict:
     connect.commit()
 
     animals_with_stats = {}
-    for animal in all_animals:
-        key = animal[1]
-        animal_stats = animal[5:]
-        animals_with_stats.update([(key, animal_stats)])
+    for row in all_animals:
+        animal = row[1]
+        animal_stats = row[7:]
+        animals_with_stats.update([(animal, animal_stats)])
 
     return animals_with_stats
 
@@ -68,7 +68,7 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
             to_insert,
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : New result of user with ID {user_id} and username = {username}'
+        logging.info(f' {datetime.now()} : New result of user with ID {user_id} and username = {username} '
                      f'successfully added to database.')
 
 
