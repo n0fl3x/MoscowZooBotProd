@@ -25,7 +25,7 @@ async def get_all_animals_stats() -> dict:
     animals_with_stats = {}
     for row in all_animals:
         animal = row[1]
-        animal_stats = row[7:]
+        animal_stats = row[8:]
         animals_with_stats.update([(animal, animal_stats)])
 
     return animals_with_stats
@@ -110,6 +110,7 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
         """SELECT max(id) 
         FROM 'admin_and_models_feedback'"""
     ).fetchone()[0]
+    connect.commit()
 
     if fb_id is not None:
         fb_id += 1
@@ -122,6 +123,7 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
         FROM 'admin_and_models_result' 
         WHERE res_user_id = '{user_id}'"""
     ).fetchone()
+    connect.commit()
 
     if not user_result:
         return

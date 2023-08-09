@@ -60,3 +60,8 @@ QUIZ_ALREADY_FINISHED_TEXT = """
 QUIZ_CANCEL_FEEDBACK_STATE_TEXT = """
 Вы сейчас оставляете отзыв, а не проходите опрос.
 """
+
+
+FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT = """
+Вы передумали оставлять отзыв чтобы начать новый опрос.
+"""

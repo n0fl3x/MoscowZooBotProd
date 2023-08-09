@@ -3,3 +3,4 @@
 .env
 __pycache__/
 *.pyc
+msk_zoo_tg_bot/zoo_bot_db.sqlite3

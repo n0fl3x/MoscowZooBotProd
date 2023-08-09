@@ -5,11 +5,6 @@ from commands.quiz_commands import CANCEL_QUIZ_COMMAND
 
 from text_data.quiz_q_and_a import answers
 
-"""
-Хоть эти фильтры в данный момент не несут никакой смысловой нагрузки,
-они были вынесены в отдельный файл для их возможной будущей кастомизации.
-"""
-
 
 async def cancel_quiz_inline_btn_filter(callback_query: types.CallbackQuery):
     if callback_query.data == f'/{CANCEL_QUIZ_COMMAND}':

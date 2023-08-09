@@ -26,10 +26,16 @@ class Animal(models.Model):
     anim_gender = models.IntegerField(
         choices=GENDERS,
         default=female,
+        verbose_name='Пол животного',
     )
 
-    anim_image = models.TextField(
-        verbose_name='Изображение',
+    anim_image_to_show = models.TextField(
+        verbose_name='Изображение для Telegram',
+        help_text='Вставьте сюда ID изображения животного в Telegram или ссылку на изображение.',
+    )
+
+    anim_image_to_send = models.TextField(
+        verbose_name='Изображение для отправки/репоста',
         help_text='Вставьте сюда ID изображения животного в Telegram или ссылку на изображение.',
     )
 

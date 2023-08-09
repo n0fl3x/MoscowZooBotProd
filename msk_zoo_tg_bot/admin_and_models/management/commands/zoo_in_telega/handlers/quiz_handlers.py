@@ -30,6 +30,7 @@ from text_data.quiz_messages_text import (
     QUIZ_ALREADY_FINISHED_TEXT,
     QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
     QUIZ_RESTART_TEXT,
+    FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
 )
 
 from filters.handlers_filters import (
@@ -128,6 +129,11 @@ async def start_quiz_command(message: types.Message, state: FSMContext) -> None:
 
     if current_state is None:
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} started new quiz.')
+    elif current_state == 'Feedback:feedback':
+        await message.answer(text=FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT)
+        await state.reset_state()
+        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} cancelled feedback stare '
+                     f'and started new quiz.')
     else:
         await message.answer(text=QUIZ_RESTART_TEXT)
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} restarted quiz.')
@@ -137,7 +143,6 @@ async def start_quiz_command(message: types.Message, state: FSMContext) -> None:
         text=questions[0],
         reply_markup=inline_keyboard_1
     )
-    await get_all_animals_stats()
     await CurrentQuestion.question_1.set()
 
 
