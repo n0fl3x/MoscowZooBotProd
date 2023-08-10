@@ -138,7 +138,7 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
         to_insert,
     )
     connect.commit()
-    logging.info(f' {datetime.now()} : New feedback of user with ID {user_id} and username = {username}'
+    logging.info(f' {datetime.now()} : New feedback of user with ID {user_id} and username = {username} '
                  f'successfully added to database.')
 
 
