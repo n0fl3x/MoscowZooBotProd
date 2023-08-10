@@ -124,17 +124,22 @@ async def get_totem_animal(proxy_dict: dict) -> dict:
     for animal in animals_with_stats.keys():
         glob_diff[animal] = 0
 
-    cnt = 0
+    glob_diff_cnt = 0
     for tupl in animals_with_stats.values():
         diff = []
+        tupl_cnt = 0
 
         for stat in params.values():
-            cur_diff = stat - int(tupl[cnt])
+            cur_diff = stat - int(tupl[tupl_cnt])
             diff.append(abs(cur_diff))
-        glob_diff[list(glob_diff.keys())[cnt]] = sum(diff)
 
-        if cnt < len(animals_with_stats.keys()):
-            cnt += 1
+            if tupl_cnt < len(tupl):
+                tupl_cnt += 1
+
+        glob_diff[list(glob_diff.keys())[glob_diff_cnt]] = sum(diff)
+
+        if glob_diff_cnt < len(glob_diff.keys()):
+            glob_diff_cnt += 1
 
     min_diff = min(glob_diff.values())
     best_animals = {key: value for key, value in glob_diff.items() if value == min_diff}
