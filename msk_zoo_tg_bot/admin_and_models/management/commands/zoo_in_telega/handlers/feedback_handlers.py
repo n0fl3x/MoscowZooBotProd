@@ -7,12 +7,12 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from bot_settings import bot
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback
+from database.quiz_result_db import check_user_result
 
-from database.zoo_bot_db_config import (
+from database.feedback_db import (
     check_user_feedback,
     delete_old_feedback,
     insert_new_feedback,
-    check_user_result,
 )
 
 from commands.feedback_commands import (

@@ -9,11 +9,10 @@ from bot_settings import bot
 from filters.result_filters import get_totem_animal
 from text_data.quiz_q_and_a import questions, answers
 
-from database.zoo_bot_db_config import (
+from database.quiz_result_db import (
     check_user_result,
     delete_old_result,
     insert_new_result,
-    get_all_animals_stats,
 )
 
 from commands.quiz_commands import (
