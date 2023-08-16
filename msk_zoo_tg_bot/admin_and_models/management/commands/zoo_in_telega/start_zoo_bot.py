@@ -8,7 +8,7 @@ from bot_settings import dp
 from handlers import (
     quiz_handlers,
     feedback_handlers,
-    static_commands_handlers,
+    talk_handlers,
     random_messages_handlers,
 )
 
@@ -22,7 +22,7 @@ async def on_startup(dp):
 # --------
 # Handlers
 quiz_handlers.register_quiz_handlers(disp=dp)
-static_commands_handlers.register_static_command_handlers(disp=dp)
+talk_handlers.register_static_command_handlers(disp=dp)
 feedback_handlers.register_feedback_handlers(disp=dp)
 random_messages_handlers.register_rand_msg_handlers(disp=dp)
 

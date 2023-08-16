@@ -67,7 +67,7 @@ async def delete_old_result(state: FSMContext) -> None:
         logging.info(f' {datetime.now()} : Old result of user with ID {user_id} successfully deleted from database.')
 
 
-async def check_user_result(state: FSMContext) -> bool:
+async def check_user_result_after_quiz(state: FSMContext) -> bool:
     """Функция для проверки проходил ли уже текущий пользователь опрос хотя бы один раз."""
 
     async with state.proxy() as data:
@@ -82,3 +82,16 @@ async def check_user_result(state: FSMContext) -> bool:
         if result:
             return True
         return False
+
+
+async def get_user_last_result(user_id) -> list:
+    """Функция для проверки проходил ли уже текущий пользователь опрос хотя бы один раз."""
+
+    result = curs.execute(
+        f"""SELECT * 
+        FROM 'admin_and_models_result' 
+        WHERE res_user_id = '{user_id}'"""
+    ).fetchone()
+    connect.commit()
+
+    return result

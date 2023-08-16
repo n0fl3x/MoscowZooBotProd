@@ -1,9 +1,9 @@
 from aiogram import types
-from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils import executor
 from config import bot, dp
 from media.images import *
-from media.texts import *
+from mian_branch_files.texts import *
 
 async def on_startup(_):
     print('Бот успешно запущен')

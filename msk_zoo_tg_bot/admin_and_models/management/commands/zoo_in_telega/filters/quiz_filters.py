@@ -2,8 +2,23 @@ from aiogram import types
 
 from commands.feedback_commands import CANCEL_FEEDBACK_COMMAND
 from commands.quiz_commands import CANCEL_QUIZ_COMMAND
-
 from text_data.quiz_q_and_a import answers
+
+
+async def user_got_result_filter(callback_query: types.CallbackQuery):
+    if callback_query.data == 'start_quiz' or \
+            callback_query.data == 'ok_start_quiz':
+        return callback_query
+
+
+async def dont_want_quiz_filter(callback_query: types.CallbackQuery):
+    if callback_query.data == 'dont_want_quiz':
+        return callback_query
+
+
+async def see_previous_result(callback_query: types.CallbackQuery):
+    if callback_query.data == 'see_previous_result':
+        return callback_query
 
 
 async def cancel_quiz_inline_btn_filter(callback_query: types.CallbackQuery):

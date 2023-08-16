@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from bot_settings import bot
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback
-from database.quiz_result_db import check_user_result
+from database.quiz_result_db import check_user_result_after_quiz
 
 from database.feedback_db import (
     check_user_feedback,
@@ -32,7 +32,7 @@ from text_data.feedback_messages_text import (
     CANT_FEEDBACK_WITHOUT_QUIZ,
 )
 
-from filters.handlers_filters import cancel_feedback_inline_btn_filter
+from filters.quiz_filters import cancel_feedback_inline_btn_filter
 
 
 # --------------
@@ -51,7 +51,7 @@ async def feedback_command(message: types.Message, state: FSMContext) -> None:
     async with state.proxy() as data:
         data['user_id'] = message.from_user.id
 
-    got_result = await check_user_result(state=state)
+    got_result = await check_user_result_after_quiz(state=state)
 
     if got_result:
         cur_state = await state.get_state()
