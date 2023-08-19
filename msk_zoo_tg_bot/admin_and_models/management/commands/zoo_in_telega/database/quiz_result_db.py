@@ -67,25 +67,8 @@ async def delete_old_result(state: FSMContext) -> None:
         logging.info(f' {datetime.now()} : Old result of user with ID {user_id} successfully deleted from database.')
 
 
-async def check_user_result_after_quiz(state: FSMContext) -> bool:
-    """Функция для проверки проходил ли уже текущий пользователь опрос хотя бы один раз."""
-
-    async with state.proxy() as data:
-        user_id = data.get('user_id')
-        result = curs.execute(
-            f"""SELECT * 
-            FROM 'admin_and_models_result' 
-            WHERE res_user_id = '{user_id}'"""
-        ).fetchone()
-        connect.commit()
-
-        if result:
-            return True
-        return False
-
-
-async def get_user_last_result(user_id) -> list:
-    """Функция для проверки проходил ли уже текущий пользователь опрос хотя бы один раз."""
+async def check_user_result(user_id) -> list:
+    """Функция для проверки результата пользователя, если он/она уже проходил(-а) опрос хотя бы один раз."""
 
     result = curs.execute(
         f"""SELECT * 
@@ -95,3 +78,16 @@ async def get_user_last_result(user_id) -> list:
     connect.commit()
 
     return result
+
+
+async def get_db_animal(animal) -> list:
+    """Функция для поиска нужного животного из БД."""
+
+    db_animal_record = curs.execute(
+        f"""SELECT * 
+        FROM 'admin_and_models_animal' 
+        WHERE anim_animal = '{animal}'"""
+    ).fetchone()
+    connect.commit()
+
+    return db_animal_record

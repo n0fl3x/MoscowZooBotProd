@@ -7,22 +7,17 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from bot_settings import bot
 from filters.result_filters import get_totem_animal
+from keyboards.talk_kb import inline_keyboard_show_me_result
 from text_data.quiz_q_and_a import questions
 
 from database.quiz_result_db import (
-    check_user_result_after_quiz,
+    check_user_result,
     delete_old_result,
     insert_new_result,
 )
 
-from commands.quiz_commands import (
-    START_QUIZ_COMMAND,
-    CANCEL_QUIZ_COMMAND,
-)
-
 from text_data.quiz_messages_text import (
     QUIZ_START_TEXT,
-    QUIZ_COMPLETE_TEXT,
     QUIZ_STATE_CANCEL_COMMAND_TEXT,
     QUIZ_CANCEL_NONE_STATE_TEXT,
     QUIZ_ALREADY_ANSWERED_TEXT,
@@ -32,7 +27,7 @@ from text_data.quiz_messages_text import (
     FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
 )
 
-from filters.quiz_filters import (
+from filters.all_handlers_filters import (
     cancel_quiz_inline_btn_filter,
     question_filter_1,
     question_filter_2,
@@ -43,6 +38,7 @@ from filters.quiz_filters import (
     question_filter_7,
     question_filter_8,
     question_filter_9,
+    start_quiz_inline_btn_filter,
 )
 
 from keyboards.quiz_kb import (
@@ -76,29 +72,6 @@ class CurrentQuestion(StatesGroup):
 
 # -------------
 # Quiz handlers
-async def cancel_quiz_command(message: types.Message, state: FSMContext) -> None:
-    """Функция-обработчик команды, введённой вручную.
-    Останавливает текущий опрос."""
-
-    current_state = await state.get_state()
-
-    if current_state is None:
-        await message.answer(text=QUIZ_CANCEL_NONE_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel quiz '
-                     f'at empty state by command.')
-
-    elif current_state == 'Feedback:feedback':
-        await message.answer(text=QUIZ_CANCEL_FEEDBACK_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to cancel '
-                     f'quiz at {current_state} state by command.')
-
-    else:
-        await message.answer(text=QUIZ_STATE_CANCEL_COMMAND_TEXT)
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} cancelled '
-                     f'quiz at {current_state} state by command.')
-
-
 async def cancel_quiz_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
     """Функция-обработчик команды, вызванная через инлайн-кнопку.
     Останавливает текущий опрос."""
@@ -110,41 +83,15 @@ async def cancel_quiz_inline_button(callback: types.CallbackQuery, state: FSMCon
         await callback.message.answer(text=QUIZ_CANCEL_NONE_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel quiz '
                      f'at empty state by inline button.')
-
     elif current_state == 'Feedback:feedback':
         await callback.message.answer(text=QUIZ_CANCEL_FEEDBACK_STATE_TEXT)
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
                      f'quiz at {current_state} state by inline button.')
-
     else:
         await callback.message.answer(text=QUIZ_STATE_CANCEL_COMMAND_TEXT)
         await state.reset_state()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} cancelled '
                      f'quiz at {current_state} state by inline button command.')
-
-
-async def start_quiz_command(message: types.Message, state: FSMContext) -> None:
-    """Функция-обработчик команды запуска опроса."""
-
-    current_state = await state.get_state()
-
-    if current_state is None:
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} started new quiz.')
-    elif current_state == 'Feedback:feedback':
-        await message.answer(text=FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT)
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} cancelled feedback stare '
-                     f'and started new quiz.')
-    else:
-        await message.answer(text=QUIZ_RESTART_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} restarted quiz.')
-
-    await message.answer(text=QUIZ_START_TEXT)
-    await message.answer(
-        text=questions[0],
-        reply_markup=inline_keyboard_1
-    )
-    await CurrentQuestion.question_1.set()
 
 
 async def start_quiz_inline_button(callback_query: types.CallbackQuery, state: FSMContext):
@@ -234,7 +181,6 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_3,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_2' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -243,7 +189,6 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 2nd question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -274,7 +219,6 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_4,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_3' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -283,7 +227,6 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 3rd question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -314,7 +257,6 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_5,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_4' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -323,7 +265,6 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 4th question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -354,7 +295,6 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_6,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_5' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -363,7 +303,6 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 5th question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -394,7 +333,6 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_7,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_6' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -403,7 +341,6 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 6th question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -434,7 +371,6 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_8,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_7' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -443,7 +379,6 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 7th question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -474,7 +409,6 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
             reply_markup=inline_keyboard_9,
         )
         await CurrentQuestion.next()
-
     elif cur_state != 'CurrentQuestion:question_8' and cur_state is not None:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -483,7 +417,6 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
         )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
                      f'answer ({callback_query.data}) the 8th question again in current quiz.')
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -502,35 +435,32 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
 
     if cur_state == 'CurrentQuestion:question_9':
         await bot.answer_callback_query(callback_query_id=callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
+                     f'({callback_query.data}) the 9th question.')
         async with state.proxy() as data:
             data['9th_question'] = callback_query.data
             proxy_dict = data.as_dict()
-            result = await get_totem_animal(proxy_dict=proxy_dict)
-        got_db_result = await check_user_result_after_quiz(state=state)
+            totem_animal = await get_totem_animal(proxy_dict=proxy_dict)
+        got_db_result = await check_user_result(user_id=data.get('user_id'))
 
         if got_db_result:
             await delete_old_result(state=state)
 
         await insert_new_result(
             state=state,
-            animal=result.get('animal'),
+            animal=totem_animal,
         )
         await bot.send_message(
             chat_id=callback_query.from_user.id,
             text=callback_query.data,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 9th question.')
-        await bot.send_message(
-            chat_id=result.get('chat_id'),
-            text='Вау! Да ты ' + result.get('animal') + '!',
-        )
+        await state.finish()
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=QUIZ_COMPLETE_TEXT,
+            text='Я знаю кто ты!\n'
+                 'Хочешь узнать свой результат?',
+            reply_markup=inline_keyboard_show_me_result,
         )
-        await state.finish()
-
     else:
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(
@@ -544,19 +474,9 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
 # ---------------------
 # Handlers registration
 def register_quiz_handlers(disp: Dispatcher) -> None:
-    disp.register_message_handler(
-        start_quiz_command,
-        commands=[f'{START_QUIZ_COMMAND}'],
-        state='*',
-    )
     disp.register_callback_query_handler(
         start_quiz_inline_button,
-        lambda callback: callback.data == 'go_quiz_again',
-        state='*',
-    )
-    disp.register_message_handler(
-        cancel_quiz_command,
-        commands=[f'{CANCEL_QUIZ_COMMAND}'],
+        start_quiz_inline_btn_filter,
         state='*',
     )
     disp.register_callback_query_handler(

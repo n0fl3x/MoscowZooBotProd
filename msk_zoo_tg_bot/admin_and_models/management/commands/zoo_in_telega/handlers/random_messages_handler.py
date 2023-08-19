@@ -4,6 +4,8 @@ from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
+from filters.all_handlers_filters import random_message_filter
+
 
 # --------------
 # For users spam
@@ -22,9 +24,10 @@ async def random_message_handler(message: types.Message, state: FSMContext):
 
 # ---------------------
 # Handlers registration
-def register_rand_msg_handlers(disp: Dispatcher):
+def register_rand_msg_handler(disp: Dispatcher):
     disp.register_message_handler(
         random_message_handler,
+        random_message_filter,
         content_types=types.ContentTypes.ANY,
         state='*',
     )

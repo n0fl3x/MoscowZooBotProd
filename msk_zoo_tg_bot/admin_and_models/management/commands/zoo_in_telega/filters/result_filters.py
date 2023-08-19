@@ -1,11 +1,14 @@
+import logging
+
+from datetime import datetime
 from random import choice
 
 from database.logic_db import get_all_animals_stats
 from text_data.quiz_q_and_a import answers
 
 
-async def get_totem_animal(proxy_dict: dict) -> dict:
-    chat_id = proxy_dict.get('user_id')
+async def get_totem_animal(proxy_dict: dict) -> str:
+    user_id = proxy_dict.get('user_id')
     proxy_dict.pop('user_id')
 
     username = proxy_dict.get('username')
@@ -145,16 +148,15 @@ async def get_totem_animal(proxy_dict: dict) -> dict:
     best_animals = {key: value for key, value in glob_diff.items() if value == min_diff}
 
     if len(best_animals) == 1:
-        result = {
-            'chat_id': chat_id,
-            'username': username,
-            'animal': list(best_animals.keys())[0],
-        }
+        totem_animal = list(best_animals.keys())[0]
     else:
-        result = {
-            'chat_id': chat_id,
-            'username': username,
-            'animal': choice(list(best_animals.keys())),
-        }
+        totem_animal = choice(list(best_animals.keys()))
 
-    return result
+    if username:
+        logging.info(f' {datetime.now()} : User with ID {user_id} and username = {username} '
+                     f'got new totem animal = {totem_animal}')
+    else:
+        logging.info(f' {datetime.now()} : User with ID {user_id} '
+                     f'got new totem animal = {totem_animal}')
+
+    return totem_animal
