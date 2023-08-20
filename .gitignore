@@ -10,3 +10,5 @@ __pycache__
 .DS_Store
 
 msk_zoo_tg_bot/zoo_bot_db.sqlite3
+
+.DS_Store
