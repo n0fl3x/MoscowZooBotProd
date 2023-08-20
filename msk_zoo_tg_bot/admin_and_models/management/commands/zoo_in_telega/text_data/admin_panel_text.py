@@ -1,15 +1,14 @@
-import aiogram.types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
-
 HELLO_ADMIN = """
 Вы являетесь администратором этого бота и имеете доступ к его скрытому функционалу!
 Если Вам нужна помощь, нажмите кнопку <b><i>help</i></b> 👇🏻
 """
 
+
 NOT_ADMIN = """
 Прости, но мне не сказали, что ты админ☹️
 Я не могу открыть тебе доступ...
 """
+
 
 HELP = """
 Для того, чтобы получить id файла, <b>просто отправьте его в чат</b>
@@ -30,10 +29,3 @@ P.S. id одинаковы при каждом отправлении тольк
 
 Для того, чтобы выйти из панели администратора, нажмите кнопку 'stop'
 """
-
-help_btn = InlineKeyboardButton('help', callback_data='help')
-admin_keyboard = InlineKeyboardMarkup(row_width=1).add(help_btn)
-
-stop_keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('/stop'))
-
-remove_kb = aiogram.types.ReplyKeyboardRemove()

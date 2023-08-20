@@ -4,11 +4,11 @@ from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
-from filters.all_handlers_filters import random_message_filter
+from filters.random_messages_filter import random_message_filter
 
 
-# --------------
-# For users spam
+# ------------------------
+# Anti users' spam handler
 async def random_message_handler(message: types.Message, state: FSMContext):
     """Функция для удаления рандомных сообщений от пользователя."""
 

@@ -3,12 +3,12 @@ import logging
 from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from bot_settings import bot
-from filters.result_filters import get_totem_animal
+from logic.quiz_result_logic import get_totem_animal
 from keyboards.talk_kb import inline_keyboard_show_me_result
 from text_data.quiz_q_and_a import questions
+from states.quiz_states import CurrentQuestion
 
 from database.quiz_result_db import (
     check_user_result,
@@ -18,17 +18,13 @@ from database.quiz_result_db import (
 
 from text_data.quiz_messages_text import (
     QUIZ_START_TEXT,
-    QUIZ_STATE_CANCEL_COMMAND_TEXT,
-    QUIZ_CANCEL_NONE_STATE_TEXT,
     QUIZ_ALREADY_ANSWERED_TEXT,
     QUIZ_ALREADY_FINISHED_TEXT,
-    QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
     QUIZ_RESTART_TEXT,
     FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
 )
 
-from filters.all_handlers_filters import (
-    cancel_quiz_inline_btn_filter,
+from filters.quiz_filters import (
     question_filter_1,
     question_filter_2,
     question_filter_3,
@@ -54,46 +50,8 @@ from keyboards.quiz_kb import (
 )
 
 
-# --------------
-# States classes
-class CurrentQuestion(StatesGroup):
-    """Класс для фиксации состояний ожидания ответа на определённый по счёту вопрос."""
-
-    question_1 = State()
-    question_2 = State()
-    question_3 = State()
-    question_4 = State()
-    question_5 = State()
-    question_6 = State()
-    question_7 = State()
-    question_8 = State()
-    question_9 = State()
-
-
 # -------------
 # Quiz handlers
-async def cancel_quiz_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
-    """Функция-обработчик команды, вызванная через инлайн-кнопку.
-    Останавливает текущий опрос."""
-
-    current_state = await state.get_state()
-    await callback.answer()
-
-    if current_state is None:
-        await callback.message.answer(text=QUIZ_CANCEL_NONE_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel quiz '
-                     f'at empty state by inline button.')
-    elif current_state == 'Feedback:feedback':
-        await callback.message.answer(text=QUIZ_CANCEL_FEEDBACK_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
-                     f'quiz at {current_state} state by inline button.')
-    else:
-        await callback.message.answer(text=QUIZ_STATE_CANCEL_COMMAND_TEXT)
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} cancelled '
-                     f'quiz at {current_state} state by inline button command.')
-
-
 async def start_quiz_inline_button(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
     cur_state = await state.get_state()
@@ -477,11 +435,6 @@ def register_quiz_handlers(disp: Dispatcher) -> None:
     disp.register_callback_query_handler(
         start_quiz_inline_button,
         start_quiz_inline_btn_filter,
-        state='*',
-    )
-    disp.register_callback_query_handler(
-        cancel_quiz_inline_button,
-        cancel_quiz_inline_btn_filter,
         state='*',
     )
     disp.register_callback_query_handler(

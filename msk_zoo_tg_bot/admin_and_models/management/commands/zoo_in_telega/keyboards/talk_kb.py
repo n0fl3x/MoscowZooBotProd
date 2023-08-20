@@ -1,6 +1,10 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from keyboards.feedback_kb import inline_btn_leave_feedback
+from text_data.bot_urls import CLUB_FRIENDS_SITE
 
+
+# ---
 inline_btn_start_quiz = InlineKeyboardButton(
     text='Начать викторину',
     callback_data='check_result_before_quiz',
@@ -73,14 +77,14 @@ inline_btn_share_bot = InlineKeyboardButton(
     url='https://vk.com/share.php?url=https://t.me/Moscow_Zoo_bot',
 )
 
-inline_btn_leave_feedback = InlineKeyboardButton(
-    text='Оставить отзыв',
-    callback_data='leave_feedback',
-)
-
 inline_btn_care_program = InlineKeyboardButton(
     text='А тут что?',
     callback_data='care_program',
+)
+
+inline_btn_thats_enough = InlineKeyboardButton(
+    text='На этом всё',
+    callback_data='thats_enough',
 )
 
 inline_keyboard_after_result = InlineKeyboardMarkup().\
@@ -88,7 +92,8 @@ inline_keyboard_after_result = InlineKeyboardMarkup().\
     row(inline_btn_save_picture).\
     row(inline_btn_share_bot).\
     row(inline_btn_leave_feedback).\
-    row(inline_btn_care_program)
+    row(inline_btn_care_program).\
+    row(inline_btn_thats_enough)
 
 
 # ---
@@ -119,10 +124,20 @@ inline_btn_care_program_contacts = InlineKeyboardButton(
 
 inline_btn_care_program_website = InlineKeyboardButton(
     text='Сайт',
-    url='https://moscowzoo.ru/',
+    url=CLUB_FRIENDS_SITE,
 )
 
 inline_keyboard_care_program = InlineKeyboardMarkup().\
     row(inline_btn_care_program_contacts).\
     row(inline_btn_care_program_website).\
     row(inline_btn_thank_you)
+
+
+# ---
+inline_btn_likewise = InlineKeyboardButton(
+    text='Взаимно',
+    callback_data='likewise',
+)
+
+inline_keyboard_likewise = InlineKeyboardMarkup().\
+    row(inline_btn_likewise)

@@ -1,6 +1,10 @@
 /venv/
 /.idea/
 .env
+
 __pycache__/
+__pycache__
+**/__pycache__/
 *.pyc
+
 msk_zoo_tg_bot/zoo_bot_db.sqlite3

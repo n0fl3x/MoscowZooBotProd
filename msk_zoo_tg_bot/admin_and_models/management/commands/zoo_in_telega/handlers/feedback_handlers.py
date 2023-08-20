@@ -3,20 +3,20 @@ import logging
 from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from bot_settings import bot
+from handlers.talk_handlers import after_result_menu_handler
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback
 from database.quiz_result_db import check_user_result
+from commands.feedback_commands import CANCEL_FEEDBACK_COMMAND
+from keyboards.talk_kb import inline_keyboard_thank_you
+from filters.feedback_filters import cancel_feedback_inline_btn_filter, start_feedback_inline_btn_filter
+from states.feedback_states import Feedback
 
 from database.feedback_db import (
     check_user_feedback,
     delete_old_feedback,
     insert_new_feedback,
-)
-
-from commands.feedback_commands import (
-    CANCEL_FEEDBACK_COMMAND,
 )
 
 from text_data.feedback_messages_text import (
@@ -30,16 +30,6 @@ from text_data.feedback_messages_text import (
     THANK_YOU_FOR_FEEDBACK,
     CANT_FEEDBACK_WITHOUT_QUIZ,
 )
-
-from filters.all_handlers_filters import cancel_feedback_inline_btn_filter, start_feedback_inline_btn_filter
-
-
-# --------------
-# States classes
-class Feedback(StatesGroup):
-    """Класс для фиксации состояния ожидания отзыва от пользователя."""
-
-    feedback = State()
 
 
 # -----------------
@@ -95,6 +85,10 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
     elif current_state == 'Feedback:feedback':
         await callback.message.answer(text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT)
         await state.reset_state()
+        await after_result_menu_handler(
+            callback=callback,
+            state=state,
+        )
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} canceled '
                      f'feedback state by inline button.')
 
@@ -125,6 +119,7 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
         await bot.send_message(
             chat_id=message.chat.id,
             text=THANK_YOU_FOR_FEEDBACK,
+            reply_markup=inline_keyboard_thank_you,
         )
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} added new feedback:\n'
                      f'{message.text}')
@@ -133,6 +128,7 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
         await bot.send_message(
             chat_id=message.chat.id,
             text=DONT_UNDERSTAND_FEEDBACK,
+            reply_markup=inline_keyboard_cancel_feedback,
         )
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete invalid feedback '
                      f'with {message.content_type} type.')

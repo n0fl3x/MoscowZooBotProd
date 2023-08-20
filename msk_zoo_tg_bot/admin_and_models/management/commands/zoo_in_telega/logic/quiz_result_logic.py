@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from random import choice
 
-from database.logic_db import get_all_animals_stats
+from database.quiz_logic_db import get_all_animals_stats
 from text_data.quiz_q_and_a import answers
 
 

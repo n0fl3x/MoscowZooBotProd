@@ -1,28 +1,36 @@
 from aiogram import types, Dispatcher
-from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 
 from bot_settings import bot
 from text_data.admin_panel_text import *
+from states.admin_panel_states import AdminAuthorization
 
-
-class AdminAuthorization(StatesGroup):
-    TRUE = State()
+from keyboards.admin_kb import (
+    admin_keyboard,
+    stop_keyboard,
+    remove_kb,
+)
 
 
 ADMINS = [
     'equestrriann',
     'Nevzorov_R_O',
+    'camomail0_0',
+    'Kotia_Ro',
+    'AYSharapova',
 ]
 
 
+# -----------------------
+# Administration handlers
 async def admin_panel(message: types.Message):
     if message.from_user.username in ADMINS:
         await AdminAuthorization.TRUE.set()
         await message.answer(
             text=f"<b>Привет, {message.from_user.username}!</b>\n" + HELLO_ADMIN,
             parse_mode="HTML",
-            reply_markup=admin_keyboard),
+            reply_markup=admin_keyboard,
+        )
     else:
         await message.answer(text=NOT_ADMIN)
 
@@ -32,7 +40,7 @@ async def admin_help(callback: types.CallbackQuery):
     await callback.message.answer(
         text=HELP,
         parse_mode="HTML",
-        reply_markup=stop_keyboard
+        reply_markup=stop_keyboard,
     )
 
 
@@ -119,5 +127,11 @@ def register_admin_panel_handlers(disp: Dispatcher) -> None:
     )
     disp.register_message_handler(
         delete_spam,
-        content_types=['text', 'photo', 'video', 'sticker', 'document'],
+        content_types=[
+            'text',
+            'photo',
+            'video',
+            'sticker',
+            'document',
+        ],
     )

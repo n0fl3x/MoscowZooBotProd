@@ -10,14 +10,16 @@ from commands.static_commands import START_COMMAND
 from handlers.quiz_handlers import start_quiz_inline_button
 from text_data.static_commands_text import START_COMMAND_TEXT
 
-from filters.all_handlers_filters import (
+from filters.bot_talk_filters import (
     dont_want_quiz_filter,
-    user_got_result_filter,
+    check_user_result_filter,
     show_result_filter,
     after_result_menu_filter,
     picture_to_save_filter,
     care_program_filter,
     care_program_contacts_filter,
+    thats_enough_filter,
+    see_ya_filter,
 )
 
 from keyboards.talk_kb import (
@@ -29,11 +31,12 @@ from keyboards.talk_kb import (
     inline_keyboard_thank_you,
     inline_keyboard_welp,
     inline_keyboard_care_program,
+    inline_keyboard_likewise,
 )
 
 
-# ---------------
-# Just phrases
+# -----------------
+# Bot talk handlers
 async def start_handler(message: types.Message, state: FSMContext) -> None:
     await bot.send_photo(
         chat_id=message.chat.id,
@@ -99,8 +102,9 @@ async def show_result_handler(callback: types.CallbackQuery, state: FSMContext):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"""
-        В Московском зоопарке представителем этого вида является {nickname}. О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать <b><a href='{animal_url}'>тут</a></b>.""",
+        text=f"""В Московском зоопарке представителем этого вида является {nickname}. """
+             f"""О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать """
+             f"""<b><a href='{animal_url}'>тут</a></b>.""",
         parse_mode='HTML',
         reply_markup=inline_keyboard_whats_next,
     )
@@ -159,6 +163,24 @@ async def care_program_contacts_handler(callback: types.CallbackQuery, state: FS
     await bot.send_message(
         chat_id=callback.from_user.id,
         text='zoofriends@moscowzoo.ru',
+        reply_markup=inline_keyboard_thank_you,
+    )
+
+
+async def thats_enough_handler(callback: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text='Приятно было пообщаться',
+        reply_markup=inline_keyboard_likewise,
+    )
+
+
+async def see_ya_handler(callback: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text='Увидимся',
     )
 
 
@@ -177,7 +199,7 @@ def register_static_command_handlers(disp: Dispatcher):
     )
     disp.register_callback_query_handler(
         check_user_result_handler,
-        user_got_result_filter,
+        check_user_result_filter,
         state='*',
     )
     disp.register_callback_query_handler(
@@ -203,5 +225,15 @@ def register_static_command_handlers(disp: Dispatcher):
     disp.register_callback_query_handler(
         care_program_contacts_handler,
         care_program_contacts_filter,
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        thats_enough_handler,
+        thats_enough_filter,
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        see_ya_handler,
+        see_ya_filter,
         state='*',
     )
