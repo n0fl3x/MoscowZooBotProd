@@ -18,7 +18,6 @@ from database.quiz_result_db import (
 )
 
 from text_data.quiz_messages_text import (
-    QUIZ_START_TEXT,
     QUIZ_ALREADY_ANSWERED_TEXT,
     QUIZ_ALREADY_FINISHED_TEXT,
     QUIZ_RESTART_TEXT,
@@ -68,10 +67,6 @@ async def start_quiz_inline_button(callback_query: types.CallbackQuery, state: F
         await callback_query.answer(text=QUIZ_RESTART_TEXT)
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} restarted quiz.')
 
-    await bot.send_message(
-        chat_id=callback_query.from_user.id,
-        text=QUIZ_START_TEXT,
-    )
     await bot.send_message(
         chat_id=callback_query.from_user.id,
         text=questions[0],

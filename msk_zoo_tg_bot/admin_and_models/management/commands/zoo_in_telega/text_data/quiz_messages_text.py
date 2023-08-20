@@ -1,21 +1,7 @@
 from commands.static_commands import HELP_COMMAND
 
-from commands.quiz_commands import (
-    START_QUIZ_COMMAND,
-    CANCEL_QUIZ_COMMAND,
-)
-
+from commands.quiz_commands import START_QUIZ_COMMAND
 from commands.feedback_commands import START_FEEDBACK_COMMAND
-
-
-QUIZ_START_TEXT = f"""
-Вы приступили к опросу на определение Вашего тотемного животного.
-
-Если Вы хотите остановить опрос, введите или нажмите /{CANCEL_QUIZ_COMMAND} или просто воспользуйтесь кнопкой
-"Остановить опрос" в конце любого из вопросов
-
-Если Вы хотите перезапустить опрос, введите или нажмите /{START_QUIZ_COMMAND}
-"""
 
 
 QUIZ_COMPLETE_TEXT = f"""

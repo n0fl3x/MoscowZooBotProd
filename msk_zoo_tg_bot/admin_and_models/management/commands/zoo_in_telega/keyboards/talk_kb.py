@@ -17,8 +17,9 @@ from text_data.timosha_messages import (
     NO_ENOUGH_BTN,
     CONTACTS_BTN,
     THANK_YOU_BTN,
-    WELCOME_BTN,
     THANKS4SAVE_BTN,
+    NO_BTN,
+    CONTACTS_THANKS_BTN,
 )
 
 
@@ -116,7 +117,7 @@ inline_keyboard_after_result = InlineKeyboardMarkup().\
 
 # ---
 inline_btn_thank_you_for_feedback = InlineKeyboardButton(
-    text=WELCOME_BTN,
+    text=CONTACTS_THANKS_BTN,
     callback_data='thank_you',
 )
 
@@ -150,9 +151,14 @@ inline_btn_care_program_contacts = InlineKeyboardButton(
     callback_data='care_program_contacts',
 )
 
+inline_btn_no_thanks = InlineKeyboardButton(
+    text=NO_BTN,
+    callback_data='thank_you',
+)
+
 inline_keyboard_care_program = InlineKeyboardMarkup().\
     row(inline_btn_care_program_contacts).\
-    row(inline_btn_thank_you_for_feedback)
+    row(inline_btn_no_thanks)
 
 
 # ---

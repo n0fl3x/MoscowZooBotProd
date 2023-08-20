@@ -18,7 +18,8 @@ async def random_message_handler(message: types.Message, state: FSMContext):
         return
     else:
         await message.delete()
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} tried to send random message '
+        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                     f'{message.from_user.username} tried to send random message '
                      f'with {message.content_type} type.')
 
 

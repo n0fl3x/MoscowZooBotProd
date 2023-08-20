@@ -1,3 +1,6 @@
+import logging
+
+from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
@@ -31,8 +34,12 @@ async def admin_panel_start_handler(message: types.Message):
             parse_mode="HTML",
             reply_markup=admin_keyboard,
         )
+        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                     f'{message.from_user.username} successfully activated admin panel.')
     else:
         await message.answer(text=NOT_ADMIN)
+        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                     f'{message.from_user.username} unsuccessfully tried to activate admin panel.')
 
 
 async def admin_help_handler(callback: types.CallbackQuery):
@@ -42,6 +49,8 @@ async def admin_help_handler(callback: types.CallbackQuery):
         parse_mode="HTML",
         reply_markup=stop_keyboard,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} used help button of admin panel.')
 
 
 async def admin_scan_photo_handler(msg: types.Message):
@@ -63,6 +72,8 @@ async def admin_scan_photo_handler(msg: types.Message):
         text=f"{file_info.file_id}",
     )
     await msg.delete()
+    logging.info(f' {datetime.now()} : User with ID = {msg.from_user.id} and username = '
+                 f'{msg.from_user.username} scanned photo for ID.')
 
 
 async def admin_scan_document_handler(msg: types.Message):
@@ -83,6 +94,8 @@ async def admin_scan_document_handler(msg: types.Message):
         text=f"{file_info.file_id}",
     )
     await msg.delete()
+    logging.info(f' {datetime.now()} : User with ID = {msg.from_user.id} and username = '
+                 f'{msg.from_user.username} scanned document for ID.')
 
 
 async def admin_panel_stop_handler(message: types.Message, state: FSMContext):
@@ -91,10 +104,15 @@ async def admin_panel_stop_handler(message: types.Message, state: FSMContext):
         text='Вы вышли из панели администратора!',
         reply_markup=remove_kb,
     )
+    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                 f'{message.from_user.username} quit admin panel.')
 
 
 async def admin_delete_spam_handler(message: types.Message):
     await message.delete()
+    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                 f'{message.from_user.username} send useless message with {message.content_type} type '
+                 f'in admin panel.')
 
 
 # ---------------------

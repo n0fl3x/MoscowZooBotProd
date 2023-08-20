@@ -152,11 +152,7 @@ async def get_totem_animal(proxy_dict: dict) -> str:
     else:
         totem_animal = choice(list(best_animals.keys()))
 
-    if username:
-        logging.info(f' {datetime.now()} : User with ID {user_id} and username = {username} '
-                     f'got new totem animal = {totem_animal}')
-    else:
-        logging.info(f' {datetime.now()} : User with ID {user_id} '
-                     f'got new totem animal = {totem_animal}')
+    logging.info(f' {datetime.now()} : User with ID {user_id} and username = {username} '
+                 f'got new totem animal = {totem_animal}')
 
     return totem_animal

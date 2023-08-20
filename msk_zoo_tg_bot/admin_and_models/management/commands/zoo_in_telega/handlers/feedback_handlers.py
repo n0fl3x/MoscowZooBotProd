@@ -48,37 +48,41 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                 reply_markup=inline_keyboard_cancel_feedback,
             )
             await Feedback.feedback.set()
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} trying to crete a new feedback.')
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} trying to crete a new feedback.')
 
         elif cur_state == 'Feedback:feedback':
             await callback.message.answer(
                 text=FEEDBACK_STATE_ALREADY,
                 reply_markup=inline_keyboard_cancel_feedback,
             )
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} trying to crete a new feedback '
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} trying to crete a new feedback '
                          f'while already in a feedback state.')
 
         else:
             await callback.answer(text=BUSY_FOR_FEEDBACK)
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} trying to crete a new feedback '
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} trying to crete a new feedback '
                          f'without finishing/cancelling current quiz.')
 
     else:
         await callback.message.answer(text=CANT_FEEDBACK_WITHOUT_QUIZ)
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} trying to crete a new feedback '
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} trying to crete a new feedback '
                      f'without at least once completed quiz.')
 
 
 async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
-    """Функция-обработчик команды /cancel_feedback, вызванная через инлайн-кнопку.
-    Отменяет состояние ожидания отзыва."""
+    """Функция-обработчик отмены состояния отзыва, вызванная через инлайн-кнопку."""
 
     current_state = await state.get_state()
     await callback.answer()
 
     if current_state is None:
         await callback.message.answer(text=FEEDBACK_CANCEL_NONE_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to cancel '
                      f'feedback at empty state by inline button.')
 
     elif current_state == 'Feedback:feedback':
@@ -87,12 +91,14 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
         await after_result_menu_handler(
             callback=callback,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} canceled '
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} canceled '
                      f'feedback state by inline button.')
 
     else:
         await callback.message.answer(text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} tried to cancel '
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to cancel '
                      f'feedback at {current_state} state by inline button.')
 
 
@@ -119,7 +125,8 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
             text=THANKS_FOR_FEEDBACK,
             reply_markup=inline_keyboard_thank_you,
         )
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} added new feedback:\n'
+        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                     f'{message.from_user.username} added new feedback:\n'
                      f'{message.text}')
 
     else:
@@ -128,7 +135,8 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
             text=DONT_UNDERSTAND_FEEDBACK,
             reply_markup=inline_keyboard_cancel_feedback,
         )
-        logging.info(f' {datetime.now()} : User with ID {message.from_user.id} trying to crete invalid feedback '
+        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                     f'{message.from_user.username} trying to crete invalid feedback '
                      f'with {message.content_type} type.')
 
 

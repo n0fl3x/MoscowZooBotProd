@@ -57,7 +57,8 @@ async def start_handler(message: types.Message) -> None:
         parse_mode='HTML',
         reply_markup=inline_keyboard_start_msg,
     )
-    logging.info(f' {datetime.now()} : User with ID {message.from_user.id} used /{START_COMMAND} command.')
+    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                 f'{message.from_user.username} started/restarted bot.')
 
 
 async def dont_want_quiz_handler(callback: types.CallbackQuery) -> None:
@@ -68,8 +69,8 @@ async def dont_want_quiz_handler(callback: types.CallbackQuery) -> None:
         caption=DO_NOT_UPSET,
         reply_markup=inline_keyboard_ok_lets_go_quiz,
     )
-    logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} refused to '
-                 f'start new quiz by inline button.')
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} refused to start new quiz by inline button.')
 
 
 async def check_user_result_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
@@ -83,11 +84,15 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
             text=U_HAVE_RESULT,
             reply_markup=inline_keyboard_see_quiz_result_or_try_again,
         )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} can get previous result or start quiz again.')
     else:
         await start_quiz_inline_button(
             callback_query=callback,
             state=state,
         )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} do not have previous result and started new quiz.')
 
 
 async def show_result_handler(callback: types.CallbackQuery):
@@ -120,6 +125,8 @@ async def show_result_handler(callback: types.CallbackQuery):
         parse_mode='HTML',
         reply_markup=inline_keyboard_whats_next,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} got new result = {animal_name}.')
 
 
 async def after_result_menu_handler(callback: types.CallbackQuery):
@@ -129,6 +136,8 @@ async def after_result_menu_handler(callback: types.CallbackQuery):
         text=WHAT_DO_U_WANT,
         reply_markup=inline_keyboard_after_result,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} activated after quiz menu.')
 
 
 async def picture_to_save_handler(callback: types.CallbackQuery):
@@ -146,18 +155,26 @@ async def picture_to_save_handler(callback: types.CallbackQuery):
                 caption=SAVE_RESULT_TEXT,
                 reply_markup=inline_keyboard_thank_you_pic_save,
             )
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} get a result HD picture to save.')
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
                 text='Видимо такого животного уже/ещё нету в БД',
                 reply_markup=inline_keyboard_welp,
             )
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} can not get previous result HD picture '
+                         f'because no such animal in database.')
     else:
         await bot.send_message(
             chat_id=callback.from_user.id,
             text='Похоже ты всё-таки ещё ни разу не проходил опрос',
             reply_markup=inline_keyboard_welp,
         )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to get HD picture of result to save '
+                     f'without completing quiz at least once.')
 
 
 async def care_program_handler(callback: types.CallbackQuery):
@@ -168,6 +185,8 @@ async def care_program_handler(callback: types.CallbackQuery):
         caption=CLUB_FRIENDS_INFO,
         reply_markup=inline_keyboard_care_program,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} watching care program info.')
 
 
 async def care_program_contacts_handler(callback: types.CallbackQuery):
@@ -178,6 +197,8 @@ async def care_program_contacts_handler(callback: types.CallbackQuery):
         parse_mode='HTML',
         reply_markup=inline_keyboard_thank_you,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} watching care program contacts.')
 
 
 async def thats_enough_handler(callback: types.CallbackQuery):
@@ -187,6 +208,8 @@ async def thats_enough_handler(callback: types.CallbackQuery):
         text=THANKS_FOR_TALK,
         reply_markup=inline_keyboard_likewise,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} ending chat with bot.')
 
 
 async def see_ya_handler(callback: types.CallbackQuery):
@@ -195,6 +218,8 @@ async def see_ya_handler(callback: types.CallbackQuery):
         chat_id=callback.from_user.id,
         text=SEE_YOU,
     )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} finished the bot.')
 
 
 # ---------------------
