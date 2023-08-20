@@ -20,7 +20,25 @@ from text_data.timosha_messages import (
     THANKS4SAVE_BTN,
     NO_BTN,
     CONTACTS_THANKS_BTN,
+    VERY_BEGINING,
+    FROM_QUIZ,
 )
+
+
+# ---
+inline_btn_start_bot = InlineKeyboardButton(
+    text=VERY_BEGINING,
+    callback_data='stopped_at_start_bot',
+)
+
+inline_btn_run_quiz = InlineKeyboardButton(
+    text=FROM_QUIZ,
+    callback_data='stopped_at_quiz',
+)
+
+inline_keyboard_help_msg = InlineKeyboardMarkup().\
+    row(inline_btn_start_bot).\
+    row(inline_btn_run_quiz)
 
 
 # ---

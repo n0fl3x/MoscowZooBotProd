@@ -6,7 +6,7 @@ from aiogram.dispatcher import FSMContext
 
 from bot_settings import bot
 from database.quiz_result_db import check_user_result, get_db_animal
-from commands.static_commands import START_COMMAND
+from commands.static_commands import START_COMMAND, HELP_COMMAND, CONTACTS_COMMAND
 from handlers.quiz_handlers import start_quiz_inline_button
 
 from filters.bot_talk_filters import (
@@ -32,6 +32,7 @@ from keyboards.talk_kb import (
     inline_keyboard_care_program,
     inline_keyboard_likewise,
     inline_keyboard_thank_you_pic_save,
+    inline_keyboard_help_msg,
 )
 
 from text_data.timosha_messages import (
@@ -43,12 +44,50 @@ from text_data.timosha_messages import (
     THANKS_FOR_TALK,
     SEE_YOU,
     SAVE_RESULT_TEXT,
+    USER_HELP,
     CONTACTS,
 )
 
 
 # -----------------
 # Bot talk handlers
+async def help_handler(message: types.Message) -> None:
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text=USER_HELP,
+        reply_markup=inline_keyboard_help_msg,
+    )
+    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                 f'{message.from_user.username} used bot help menu button.')
+
+
+async def help_to_restart_bot_handler(callback: types.CallbackQuery) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    await start_handler(message=callback.message)
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} restarted bot by help menu button.')
+
+
+async def help_to_restart_quiz_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    await start_quiz_inline_button(
+        callback_query=callback,
+        state=state,
+    )
+    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                 f'{callback.from_user.username} restarted quiz by help menu button.')
+
+
+async def contacts_handler(message: types.Message) -> None:
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text=CONTACTS,
+        reply_markup=inline_keyboard_thank_you,
+    )
+    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+                 f'{message.from_user.username} want to see contacts by help menu button.')
+
+
 async def start_handler(message: types.Message) -> None:
     await bot.send_photo(
         chat_id=message.chat.id,
@@ -225,6 +264,26 @@ async def see_ya_handler(callback: types.CallbackQuery):
 # ---------------------
 # Handlers registration
 def register_static_command_handlers(disp: Dispatcher):
+    disp.register_message_handler(
+        help_handler,
+        commands=[f'{HELP_COMMAND}'],
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        help_to_restart_bot_handler,
+        lambda callback: callback.data == 'stopped_at_start_bot',
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        help_to_restart_quiz_handler,
+        lambda callback: callback.data == 'stopped_at_quiz',
+        state='*',
+    )
+    disp.register_message_handler(
+        contacts_handler,
+        commands=[f'{CONTACTS_COMMAND}'],
+        state='*',
+    )
     disp.register_message_handler(
         start_handler,
         commands=[f'{START_COMMAND}'],

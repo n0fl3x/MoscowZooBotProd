@@ -152,4 +152,5 @@ def register_admin_panel_handlers(disp: Dispatcher) -> None:
             'sticker',
             'document',
         ],
+        state=AdminAuthorization.TRUE,
     )
