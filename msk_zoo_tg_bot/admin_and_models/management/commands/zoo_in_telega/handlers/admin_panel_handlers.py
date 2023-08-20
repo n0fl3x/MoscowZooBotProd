@@ -23,7 +23,7 @@ ADMINS = [
 
 # -----------------------
 # Administration handlers
-async def admin_panel(message: types.Message):
+async def admin_panel_start_handler(message: types.Message):
     if message.from_user.username in ADMINS:
         await AdminAuthorization.TRUE.set()
         await message.answer(
@@ -35,7 +35,7 @@ async def admin_panel(message: types.Message):
         await message.answer(text=NOT_ADMIN)
 
 
-async def admin_help(callback: types.CallbackQuery):
+async def admin_help_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await callback.message.answer(
         text=HELP,
@@ -44,7 +44,7 @@ async def admin_help(callback: types.CallbackQuery):
     )
 
 
-async def scan_photo(msg: types.Message):
+async def admin_scan_photo_handler(msg: types.Message):
     document_id = msg.photo[0].file_id
     file_info = await bot.get_file(document_id)
 
@@ -65,7 +65,7 @@ async def scan_photo(msg: types.Message):
     await msg.delete()
 
 
-async def scan_document(msg: types.Message):
+async def admin_scan_document_handler(msg: types.Message):
     file_info = await bot.get_file(file_id=msg.document.file_id)
 
     await bot.send_message(
@@ -85,7 +85,7 @@ async def scan_document(msg: types.Message):
     await msg.delete()
 
 
-async def stop_handler(message: types.Message, state: FSMContext):
+async def admin_panel_stop_handler(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(
         text='Вы вышли из панели администратора!',
@@ -93,7 +93,7 @@ async def stop_handler(message: types.Message, state: FSMContext):
     )
 
 
-async def delete_spam(message: types.Message):
+async def admin_delete_spam_handler(message: types.Message):
     await message.delete()
 
 
@@ -101,32 +101,32 @@ async def delete_spam(message: types.Message):
 # Handlers registration
 def register_admin_panel_handlers(disp: Dispatcher) -> None:
     disp.register_message_handler(
-        admin_panel,
+        admin_panel_start_handler,
         commands=['admin'],
         state='*',
     )
     disp.register_callback_query_handler(
-        admin_help,
+        admin_help_handler,
         lambda callback: callback.data == "help",
         state=AdminAuthorization.TRUE,
     )
     disp.register_message_handler(
-        scan_photo,
+        admin_scan_photo_handler,
         content_types=['photo'],
         state=AdminAuthorization.TRUE,
     )
     disp.register_message_handler(
-        scan_document,
+        admin_scan_document_handler,
         content_types=['document'],
         state=AdminAuthorization.TRUE,
     )
     disp.register_message_handler(
-        stop_handler,
+        admin_panel_stop_handler,
         commands=['stop'],
         state=AdminAuthorization.TRUE,
     )
     disp.register_message_handler(
-        delete_spam,
+        admin_delete_spam_handler,
         content_types=[
             'text',
             'photo',

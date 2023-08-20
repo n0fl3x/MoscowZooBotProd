@@ -8,7 +8,6 @@ from bot_settings import bot
 from database.quiz_result_db import check_user_result, get_db_animal
 from commands.static_commands import START_COMMAND
 from handlers.quiz_handlers import start_quiz_inline_button
-from text_data.static_commands_text import START_COMMAND_TEXT
 
 from filters.bot_talk_filters import (
     dont_want_quiz_filter,
@@ -32,27 +31,41 @@ from keyboards.talk_kb import (
     inline_keyboard_welp,
     inline_keyboard_care_program,
     inline_keyboard_likewise,
+    inline_keyboard_thank_you_pic_save,
+)
+
+from text_data.timosha_messages import (
+    HELLO_MSG,
+    DO_NOT_UPSET,
+    U_HAVE_RESULT,
+    WHAT_DO_U_WANT,
+    CLUB_FRIENDS_INFO,
+    THANKS_FOR_TALK,
+    SEE_YOU,
+    SAVE_RESULT_TEXT,
+    CONTACTS,
 )
 
 
 # -----------------
 # Bot talk handlers
-async def start_handler(message: types.Message, state: FSMContext) -> None:
+async def start_handler(message: types.Message) -> None:
     await bot.send_photo(
         chat_id=message.chat.id,
         photo='AgACAgIAAxkBAAIKx2TfpTBifqDEusvXAAHkWGScwn-rOAAC0tIxGzd1AAFLG7N9QTErez8BAAMCAANzAAMwBA',
-        caption=START_COMMAND_TEXT,
+        caption=HELLO_MSG,
+        parse_mode='HTML',
         reply_markup=inline_keyboard_start_msg,
     )
     logging.info(f' {datetime.now()} : User with ID {message.from_user.id} used /{START_COMMAND} command.')
 
 
-async def dont_want_quiz_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
+async def dont_want_quiz_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_photo(
         chat_id=callback.from_user.id,
         photo='AgACAgIAAxkBAAIKymTfpXzUAWq2DwiUcRBpKSdPHmVhAALfyzEb6Cn4Sv4XUhOfzfCsAQADAgADcwADMAQ',
-        caption='Не зли. Проходи.',
+        caption=DO_NOT_UPSET,
         reply_markup=inline_keyboard_ok_lets_go_quiz,
     )
     logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} refused to '
@@ -67,8 +80,7 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
     if got_result:
         await bot.send_message(
             chat_id=callback.from_user.id,
-            text='Ты уже проходил тест.\n'
-                 'Хочешь снова увидеть прошлый результат?',
+            text=U_HAVE_RESULT,
             reply_markup=inline_keyboard_see_quiz_result_or_try_again,
         )
     else:
@@ -78,7 +90,7 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
         )
 
 
-async def show_result_handler(callback: types.CallbackQuery, state: FSMContext):
+async def show_result_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
 
     result = await check_user_result(user_id=callback.from_user.id)
@@ -110,16 +122,16 @@ async def show_result_handler(callback: types.CallbackQuery, state: FSMContext):
     )
 
 
-async def after_result_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+async def after_result_menu_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text='Какой-то текст для меню после показа результата',
+        text=WHAT_DO_U_WANT,
         reply_markup=inline_keyboard_after_result,
     )
 
 
-async def picture_to_save_handler(callback: types.CallbackQuery, state: FSMContext):
+async def picture_to_save_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     totem = await check_user_result(user_id=callback.from_user.id)
 
@@ -131,8 +143,8 @@ async def picture_to_save_handler(callback: types.CallbackQuery, state: FSMConte
             await bot.send_document(
                 chat_id=callback.from_user.id,
                 document=picture,
-                caption='Вот тебе хайрез пикчи',
-                reply_markup=inline_keyboard_thank_you,
+                caption=SAVE_RESULT_TEXT,
+                reply_markup=inline_keyboard_thank_you_pic_save,
             )
         else:
             await bot.send_message(
@@ -148,39 +160,40 @@ async def picture_to_save_handler(callback: types.CallbackQuery, state: FSMConte
         )
 
 
-async def care_program_handler(callback: types.CallbackQuery, state: FSMContext):
+async def care_program_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_photo(
         chat_id=callback.from_user.id,
         photo='AgACAgIAAxkBAAIKzWTfpaGdaY8MlzBsdHk9Re-OWpU4AALgyzEb6Cn4StQIfF0AARrflwEAAwIAA3MAAzAE',
-        caption='Тут какой-то текст о программе опеки МЗ',
+        caption=CLUB_FRIENDS_INFO,
         reply_markup=inline_keyboard_care_program,
     )
 
 
-async def care_program_contacts_handler(callback: types.CallbackQuery, state: FSMContext):
+async def care_program_contacts_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text='zoofriends@moscowzoo.ru',
+        text=CONTACTS,
+        parse_mode='HTML',
         reply_markup=inline_keyboard_thank_you,
     )
 
 
-async def thats_enough_handler(callback: types.CallbackQuery, state: FSMContext):
+async def thats_enough_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text='Приятно было пообщаться',
+        text=THANKS_FOR_TALK,
         reply_markup=inline_keyboard_likewise,
     )
 
 
-async def see_ya_handler(callback: types.CallbackQuery, state: FSMContext):
+async def see_ya_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text='Увидимся',
+        text=SEE_YOU,
     )
 
 

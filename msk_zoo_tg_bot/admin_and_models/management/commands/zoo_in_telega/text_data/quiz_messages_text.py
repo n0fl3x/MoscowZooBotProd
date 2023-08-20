@@ -1,4 +1,5 @@
 from commands.static_commands import HELP_COMMAND
+
 from commands.quiz_commands import (
     START_QUIZ_COMMAND,
     CANCEL_QUIZ_COMMAND,

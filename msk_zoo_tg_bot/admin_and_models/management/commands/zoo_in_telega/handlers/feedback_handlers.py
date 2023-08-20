@@ -11,6 +11,7 @@ from database.quiz_result_db import check_user_result
 from commands.feedback_commands import CANCEL_FEEDBACK_COMMAND
 from keyboards.talk_kb import inline_keyboard_thank_you
 from filters.feedback_filters import cancel_feedback_inline_btn_filter, start_feedback_inline_btn_filter
+from text_data.timosha_messages import TYPE_YOUR_FEEDBACK, THANKS_FOR_FEEDBACK
 from states.feedback_states import Feedback
 
 from database.feedback_db import (
@@ -20,14 +21,12 @@ from database.feedback_db import (
 )
 
 from text_data.feedback_messages_text import (
-    START_FEEDBACK_STATE,
     BUSY_FOR_FEEDBACK,
     FEEDBACK_STATE_ALREADY,
     FEEDBACK_CANCEL_NONE_STATE_TEXT,
     FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
     FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
     DONT_UNDERSTAND_FEEDBACK,
-    THANK_YOU_FOR_FEEDBACK,
     CANT_FEEDBACK_WITHOUT_QUIZ,
 )
 
@@ -45,7 +44,7 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
 
         if cur_state is None:
             await callback.message.answer(
-                text=START_FEEDBACK_STATE,
+                text=TYPE_YOUR_FEEDBACK,
                 reply_markup=inline_keyboard_cancel_feedback,
             )
             await Feedback.feedback.set()
@@ -87,7 +86,6 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
         await state.reset_state()
         await after_result_menu_handler(
             callback=callback,
-            state=state,
         )
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} canceled '
                      f'feedback state by inline button.')
@@ -118,7 +116,7 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
         await state.finish()
         await bot.send_message(
             chat_id=message.chat.id,
-            text=THANK_YOU_FOR_FEEDBACK,
+            text=THANKS_FOR_FEEDBACK,
             reply_markup=inline_keyboard_thank_you,
         )
         logging.info(f' {datetime.now()} : User with ID {message.from_user.id} added new feedback:\n'

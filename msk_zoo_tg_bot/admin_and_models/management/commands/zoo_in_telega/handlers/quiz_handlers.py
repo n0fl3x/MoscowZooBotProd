@@ -9,6 +9,7 @@ from logic.quiz_result_logic import get_totem_animal
 from keyboards.talk_kb import inline_keyboard_show_me_result
 from text_data.quiz_q_and_a import questions
 from states.quiz_states import CurrentQuestion
+from text_data.timosha_messages import I_KNOW_WHO_YOU_ARE
 
 from database.quiz_result_db import (
     check_user_result,
@@ -415,8 +416,7 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
         await state.finish()
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text='Я знаю кто ты!\n'
-                 'Хочешь узнать свой результат?',
+            text=I_KNOW_WHO_YOU_ARE,
             reply_markup=inline_keyboard_show_me_result,
         )
     else:

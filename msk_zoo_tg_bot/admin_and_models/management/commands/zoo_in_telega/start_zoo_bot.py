@@ -35,7 +35,7 @@ async def on_shutdown(dp):
     logging.warning(f' {datetime.now()} : Shutting down...')
 
 
-# -------
+# --------------
 # START BOT HERE
 if __name__ == '__main__':
     executor.start_polling(
