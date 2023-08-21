@@ -46,6 +46,7 @@ from text_data.timosha_messages import (
     SAVE_RESULT_TEXT,
     USER_HELP,
     CONTACTS,
+    SOMETHING_ELSE,
 )
 
 
@@ -83,6 +84,7 @@ async def contacts_handler(message: types.Message) -> None:
         chat_id=message.chat.id,
         text=CONTACTS,
         reply_markup=inline_keyboard_thank_you,
+        parse_mode='HTML',
     )
     logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} want to see contacts by help menu button.')
@@ -170,11 +172,20 @@ async def show_result_handler(callback: types.CallbackQuery):
 
 async def after_result_menu_handler(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback_query_id=callback.id)
-    await bot.send_message(
-        chat_id=callback.from_user.id,
-        text=WHAT_DO_U_WANT,
-        reply_markup=inline_keyboard_after_result,
-    )
+
+    if callback.data == 'whats_next':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=WHAT_DO_U_WANT,
+            reply_markup=inline_keyboard_after_result,
+        )
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=SOMETHING_ELSE,
+            reply_markup=inline_keyboard_after_result,
+        )
+
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                  f'{callback.from_user.username} activated after quiz menu.')
 

@@ -7,4 +7,6 @@ __pycache__
 **/__pycache__/
 *.pyc
 
+.DS_Store
+
 msk_zoo_tg_bot/zoo_bot_db.sqlite3

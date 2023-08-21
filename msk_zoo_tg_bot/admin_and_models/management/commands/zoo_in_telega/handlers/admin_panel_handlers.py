@@ -21,6 +21,7 @@ ADMINS = [
     'camomail0_0',
     'Kotia_Ro',
     'AYSharapova',
+    'Swaggareus',
 ]
 
 

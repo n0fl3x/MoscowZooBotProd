@@ -85,10 +85,6 @@ async def process_question_1(callback_query: types.CallbackQuery, state: FSMCont
             data['user_id'] = callback_query.from_user.id
             data['username'] = callback_query.from_user.username
             data['1st_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 1st question.')
         await bot.send_message(
@@ -123,10 +119,6 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['2nd_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 2nd question.')
         await bot.send_message(
@@ -161,10 +153,6 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['3rd_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 3rd question.')
         await bot.send_message(
@@ -199,10 +187,6 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['4th_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 4th question.')
         await bot.send_message(
@@ -237,10 +221,6 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['5th_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 5th question.')
         await bot.send_message(
@@ -275,10 +255,6 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['6th_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 6th question.')
         await bot.send_message(
@@ -313,10 +289,6 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['7th_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 7th question.')
         await bot.send_message(
@@ -351,10 +323,6 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
         await bot.answer_callback_query(callback_query_id=callback_query.id)
         async with state.proxy() as data:
             data['8th_question'] = callback_query.data
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
-        )
         logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
                      f'({callback_query.data}) the 8th question.')
         await bot.send_message(
@@ -403,10 +371,6 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
         await insert_new_result(
             state=state,
             animal=totem_animal,
-        )
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=callback_query.data,
         )
         await state.finish()
         await bot.send_message(

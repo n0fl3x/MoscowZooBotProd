@@ -146,7 +146,7 @@ inline_keyboard_thank_you = InlineKeyboardMarkup().\
 # ---
 inline_btn_thank_you_pic_save = InlineKeyboardButton(
     text=THANKS4SAVE_BTN,
-    callback_data='thank_you',
+    callback_data='thank_you_for_pic_save',
 )
 
 inline_keyboard_thank_you_pic_save = InlineKeyboardMarkup().\
@@ -171,7 +171,7 @@ inline_btn_care_program_contacts = InlineKeyboardButton(
 
 inline_btn_no_thanks = InlineKeyboardButton(
     text=NO_BTN,
-    callback_data='thank_you',
+    callback_data='dont_show_care_program_contacts',
 )
 
 inline_keyboard_care_program = InlineKeyboardMarkup().\

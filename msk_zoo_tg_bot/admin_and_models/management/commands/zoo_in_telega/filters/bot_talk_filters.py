@@ -20,7 +20,9 @@ async def show_result_filter(callback_query: types.CallbackQuery):
 async def after_result_menu_filter(callback_query: types.CallbackQuery):
     if callback_query.data == 'whats_next' or \
             callback_query.data == 'welp' or \
-            callback_query.data == 'thank_you':
+            callback_query.data == 'thank_you' or \
+            callback_query.data == 'dont_show_care_program_contacts' or \
+            callback_query.data == 'thank_you_for_pic_save':
         return True
 
 
