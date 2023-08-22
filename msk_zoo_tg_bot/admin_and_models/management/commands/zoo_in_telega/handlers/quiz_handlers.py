@@ -70,7 +70,8 @@ async def start_quiz_inline_button(callback_query: types.CallbackQuery, state: F
     await bot.send_message(
         chat_id=callback_query.from_user.id,
         text=questions[0],
-        reply_markup=inline_keyboard_1
+        reply_markup=inline_keyboard_1,
+        parse_mode='HTML',
     )
     await CurrentQuestion.question_1.set()
 
@@ -92,6 +93,7 @@ async def process_question_1(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[1],
             reply_markup=inline_keyboard_2,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_1' and cur_state is not None:
@@ -127,6 +129,7 @@ async def process_question_2(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[2],
             reply_markup=inline_keyboard_3,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_2' and cur_state is not None:
@@ -162,6 +165,7 @@ async def process_question_3(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[3],
             reply_markup=inline_keyboard_4,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_3' and cur_state is not None:
@@ -197,6 +201,7 @@ async def process_question_4(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[4],
             reply_markup=inline_keyboard_5,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_4' and cur_state is not None:
@@ -232,6 +237,7 @@ async def process_question_5(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[5],
             reply_markup=inline_keyboard_6,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_5' and cur_state is not None:
@@ -267,6 +273,7 @@ async def process_question_6(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[6],
             reply_markup=inline_keyboard_7,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_6' and cur_state is not None:
@@ -302,6 +309,7 @@ async def process_question_7(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[7],
             reply_markup=inline_keyboard_8,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_7' and cur_state is not None:
@@ -337,6 +345,7 @@ async def process_question_8(callback_query: types.CallbackQuery, state: FSMCont
             chat_id=callback_query.from_user.id,
             text=questions[8],
             reply_markup=inline_keyboard_9,
+            parse_mode='HTML',
         )
         await CurrentQuestion.next()
     elif cur_state != 'CurrentQuestion:question_8' and cur_state is not None:
