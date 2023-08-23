@@ -20,7 +20,7 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
     ).fetchone()[0]
     connect.commit()
 
-    if fb_id is not None:
+    if fb_id:
         fb_id += 1
     else:
         fb_id = 1

@@ -8,11 +8,6 @@ async def start_quiz_inline_btn_filter(callback_query: types.CallbackQuery):
         return True
 
 
-async def cancel_quiz_inline_btn_filter(callback_query: types.CallbackQuery):
-    if callback_query.data == 'cancel_quiz':
-        return True
-
-
 async def question_filter_1(callback_query: types.CallbackQuery):
     if callback_query.data == answers[0][0] \
             or callback_query.data == answers[0][1] \

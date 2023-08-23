@@ -8,11 +8,15 @@ from bot_settings import bot
 from handlers.talk_handlers import after_result_menu_handler
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback
 from database.quiz_result_db import check_user_result
-from commands.feedback_commands import CANCEL_FEEDBACK_COMMAND
 from keyboards.talk_kb import inline_keyboard_thank_you
-from filters.feedback_filters import cancel_feedback_inline_btn_filter, start_feedback_inline_btn_filter
 from text_data.timosha_messages import TYPE_YOUR_FEEDBACK, THANKS_FOR_FEEDBACK
 from states.feedback_states import Feedback
+
+from filters.feedback_filters import (
+    cancel_feedback_inline_btn_filter,
+    start_feedback_inline_btn_filter,
+    process_feedback_filter,
+)
 
 from database.feedback_db import (
     check_user_feedback,
@@ -21,13 +25,14 @@ from database.feedback_db import (
 )
 
 from text_data.feedback_messages_text import (
-    BUSY_FOR_FEEDBACK,
     FEEDBACK_STATE_ALREADY,
     FEEDBACK_CANCEL_NONE_STATE_TEXT,
     FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
     FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
     DONT_UNDERSTAND_FEEDBACK,
     CANT_FEEDBACK_WITHOUT_QUIZ,
+    QUIT_ADMIN_TO_LEAVE_FEEDBACK_TEXT,
+    ADMIN_STATE_NOT_FEEDBACK,
 )
 
 
@@ -37,69 +42,104 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
     """Функция активации состояния ожидания отзыва."""
 
     await bot.answer_callback_query(callback_query_id=callback.id)
+    cur_state = await state.get_state()
     got_result = await check_user_result(user_id=callback.from_user.id)
 
     if got_result:
-        cur_state = await state.get_state()
 
-        if cur_state is None:
-            await callback.message.answer(
+        if not cur_state:
+            await bot.send_message(
+                chat_id=callback.from_user.id,
                 text=TYPE_YOUR_FEEDBACK,
                 reply_markup=inline_keyboard_cancel_feedback,
             )
             await Feedback.feedback.set()
             logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
-                         f'{callback.from_user.username} trying to crete a new feedback.')
+                         f'{callback.from_user.username} trying to crete a new feedback at {cur_state} state.')
 
         elif cur_state == 'Feedback:feedback':
-            await callback.message.answer(
+            await bot.send_message(
+                chat_id=callback.from_user.id,
                 text=FEEDBACK_STATE_ALREADY,
                 reply_markup=inline_keyboard_cancel_feedback,
             )
             logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                          f'{callback.from_user.username} trying to crete a new feedback '
-                         f'while already in a feedback state.')
+                         f'while in {cur_state} state.')
+
+        elif cur_state == 'AdminAuthorization:TRUE':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=QUIT_ADMIN_TO_LEAVE_FEEDBACK_TEXT,
+            )
+            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} trying to crete a new feedback '
+                         f'while in {cur_state} state. '
+                         f'Need to deactivate admin panel.')
 
         else:
-            await callback.answer(text=BUSY_FOR_FEEDBACK)
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=CANT_FEEDBACK_WITHOUT_QUIZ,
+            )
             logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                          f'{callback.from_user.username} trying to crete a new feedback '
                          f'without finishing/cancelling current quiz.')
 
     else:
-        await callback.message.answer(text=CANT_FEEDBACK_WITHOUT_QUIZ)
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=CANT_FEEDBACK_WITHOUT_QUIZ,
+        )
         logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
-                     f'{callback.from_user.username} trying to crete a new feedback '
+                     f'{callback.from_user.username} trying to crete a new feedback at {cur_state} state '
                      f'without at least once completed quiz.')
 
 
 async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
     """Функция-обработчик отмены состояния отзыва, вызванная через инлайн-кнопку."""
 
-    current_state = await state.get_state()
-    await callback.answer()
+    cur_state = await state.get_state()
+    await bot.answer_callback_query(callback_query_id=callback.id)
 
-    if current_state is None:
-        await callback.message.answer(text=FEEDBACK_CANCEL_NONE_STATE_TEXT)
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
-                     f'{callback.from_user.username} tried to cancel '
-                     f'feedback at empty state by inline button.')
-
-    elif current_state == 'Feedback:feedback':
-        await callback.message.answer(text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT)
-        await state.reset_state()
-        await after_result_menu_handler(
-            callback=callback,
+    if not cur_state:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=FEEDBACK_CANCEL_NONE_STATE_TEXT,
         )
         logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to cancel '
+                     f'feedback at {cur_state} state by inline button.')
+
+    elif cur_state == 'Feedback:feedback':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
+        )
+        await state.reset_state()
+        await after_result_menu_handler(callback=callback)
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} canceled '
-                     f'feedback state by inline button.')
+                     f'{cur_state} state by inline button.')
+
+    elif cur_state == 'AdminAuthorization:TRUE':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=ADMIN_STATE_NOT_FEEDBACK,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to cancel feedback '
+                     f'while in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
 
     else:
-        await callback.message.answer(text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT)
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
+        )
         logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to cancel '
-                     f'feedback at {current_state} state by inline button.')
+                     f'feedback at {cur_state} state by inline button.')
 
 
 async def process_feedback_handler(message: types.Message, state: FSMContext) -> None:
@@ -148,14 +188,14 @@ def register_feedback_handlers(disp: Dispatcher) -> None:
         start_feedback_inline_btn_filter,
         state='*',
     )
-    disp.register_message_handler(
-        process_feedback_handler,
-        lambda message: message.text != f'/{CANCEL_FEEDBACK_COMMAND}',
-        content_types=types.ContentTypes.ANY,
-        state=Feedback.feedback,
-    )
     disp.register_callback_query_handler(
         cancel_feedback_inline_button_handler,
         cancel_feedback_inline_btn_filter,
         state='*',
+    )
+    disp.register_message_handler(
+        process_feedback_handler,
+        process_feedback_filter,
+        content_types=types.ContentTypes.ANY,
+        state=Feedback.feedback,
     )

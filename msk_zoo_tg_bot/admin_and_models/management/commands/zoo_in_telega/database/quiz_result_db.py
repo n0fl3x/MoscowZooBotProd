@@ -68,7 +68,7 @@ async def delete_old_result(state: FSMContext) -> None:
                      f'deleted from database.')
 
 
-async def check_user_result(user_id) -> list:
+async def check_user_result(user_id: int) -> list:
     """Функция для проверки результата пользователя, если он/она уже проходил(-а) опрос хотя бы один раз."""
 
     result = curs.execute(
@@ -81,7 +81,7 @@ async def check_user_result(user_id) -> list:
     return result
 
 
-async def get_db_animal(animal) -> list:
+async def get_db_animal(animal: str) -> list:
     """Функция для поиска нужного животного из БД."""
 
     db_animal_record = curs.execute(

@@ -20,11 +20,14 @@ bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
 
 dp = Dispatcher(
     bot=bot,
-    storage=storage
+    storage=storage,
 )
 
 
 # -------
 # Logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    filename='logs/bot_log.log',
+)
 dp.middleware.setup(LoggingMiddleware())

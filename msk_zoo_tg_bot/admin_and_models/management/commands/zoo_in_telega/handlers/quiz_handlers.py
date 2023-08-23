@@ -19,9 +19,10 @@ from database.quiz_result_db import (
 
 from text_data.quiz_messages_text import (
     QUIZ_ALREADY_ANSWERED_TEXT,
-    QUIZ_ALREADY_FINISHED_TEXT,
     QUIZ_RESTART_TEXT,
     FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
+    QUIT_ADMIN_TO_START_QUIZ_TEXT,
+    QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
 )
 
 from filters.quiz_filters import (
@@ -52,332 +53,426 @@ from keyboards.quiz_kb import (
 
 # -------------
 # Quiz handlers
-async def start_quiz_inline_button(callback_query: types.CallbackQuery, state: FSMContext):
-    await callback_query.answer()
+async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
     cur_state = await state.get_state()
 
-    if cur_state is None:
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} started new quiz.')
-    elif cur_state == 'Feedback:feedback':
-        await callback_query.answer(text=FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT)
-        await state.reset_state()
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} cancelled feedback state '
-                     f'and started new quiz.')
-    else:
-        await callback_query.answer(text=QUIZ_RESTART_TEXT)
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} restarted quiz.')
-
-    await bot.send_message(
-        chat_id=callback_query.from_user.id,
-        text=questions[0],
-        reply_markup=inline_keyboard_1,
-        parse_mode='HTML',
-    )
-    await CurrentQuestion.question_1.set()
-
-
-async def process_question_1(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
-    cur_state = await state.get_state()
-
-    if cur_state == 'CurrentQuestion:question_1':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['user_id'] = callback_query.from_user.id
-            data['username'] = callback_query.from_user.username
-            data['1st_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 1st question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to start new quiz while in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    else:
+        if not cur_state:
+            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} started new quiz from {cur_state} state.')
+
+        elif cur_state == 'Feedback:feedback':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
+            )
+            await state.reset_state()
+            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} cancelled {cur_state} state and started new quiz.')
+
+        else:
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=QUIZ_RESTART_TEXT,
+            )
+            await state.reset_state()
+            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                         f'{callback.from_user.username} cancelled {cur_state} state and restarted quiz.')
+
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=questions[0],
+            reply_markup=inline_keyboard_1,
+            parse_mode='HTML',
+        )
+        await CurrentQuestion.question_1.set()
+
+
+async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
+    cur_state = await state.get_state()
+
+    if cur_state == 'AdminAuthorization:TRUE':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_1':
+        async with state.proxy() as data:
+            data['user_id'] = callback.from_user.id
+            data['username'] = callback.from_user.username
+            data['1st_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[1],
             reply_markup=inline_keyboard_2,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_1' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 1st question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 1st question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 1st question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state.')
 
 
-async def process_question_2(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_2':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['2nd_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 2nd question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_2':
+        async with state.proxy() as data:
+            data['2nd_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[2],
             reply_markup=inline_keyboard_3,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_2' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 2nd question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 2nd question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 2nd question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state.')
 
 
-async def process_question_3(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_3':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['3rd_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 3rd question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_3':
+        async with state.proxy() as data:
+            data['3rd_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[3],
             reply_markup=inline_keyboard_4,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_3' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 3rd question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 3rd question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 3rd question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state.')
 
 
-async def process_question_4(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_4':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['4th_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 4th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_4':
+        async with state.proxy() as data:
+            data['4th_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[4],
             reply_markup=inline_keyboard_5,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_4' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 4th question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 4th question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 4th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state.')
 
 
-async def process_question_5(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_5':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['5th_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 5th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_5':
+        async with state.proxy() as data:
+            data['5th_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[5],
             reply_markup=inline_keyboard_6,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_5' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 5th question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 5th question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 5th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state.')
 
 
-async def process_question_6(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_6':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['6th_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 6th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_6':
+        async with state.proxy() as data:
+            data['6th_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[6],
             reply_markup=inline_keyboard_7,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_6' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 6th question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 6th question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 6th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state.')
 
 
-async def process_question_7(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_7':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['7th_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 7th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_7':
+        async with state.proxy() as data:
+            data['7th_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[7],
             reply_markup=inline_keyboard_8,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_7' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 7th question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 7th question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 7th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state.')
 
 
-async def process_question_8(callback_query: types.CallbackQuery, state: FSMContext) -> None:
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_8':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        async with state.proxy() as data:
-            data['8th_question'] = callback_query.data
-
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 8th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_8':
+        async with state.proxy() as data:
+            data['8th_question'] = callback.data
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=questions[8],
             reply_markup=inline_keyboard_9,
             parse_mode='HTML',
         )
         await CurrentQuestion.next()
-    elif cur_state != 'CurrentQuestion:question_8' and cur_state is not None:
-        await bot.answer_callback_query(callback_query.id)
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 8th question.')
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 8th question again in current quiz.')
-    else:
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
-        )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 8th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state.')
 
 
-async def process_question_9(callback_query: types.CallbackQuery, state: FSMContext) -> None:
+async def process_question_9(callback: types.CallbackQuery, state: FSMContext) -> None:
     """Функция обработки последнего вопроса викторины + обработка результата."""
 
-    logging.info(f' {datetime.now()}: callback_query = {callback_query}')
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    logging.info(f' {datetime.now()}: callback_query = {callback}')
     cur_state = await state.get_state()
 
-    if cur_state == 'CurrentQuestion:question_9':
-        await bot.answer_callback_query(callback_query_id=callback_query.id)
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} answered '
-                     f'({callback_query.data}) the 9th question.')
+    if cur_state == 'AdminAuthorization:TRUE':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
+        )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'CurrentQuestion:question_9':
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} answered ({callback.data}) the 9th question.')
         async with state.proxy() as data:
-            data['9th_question'] = callback_query.data
+            data['9th_question'] = callback.data
             proxy_dict = data.as_dict()
             totem_animal = await get_totem_animal(proxy_dict=proxy_dict)
         got_db_result = await check_user_result(user_id=data.get('user_id'))
@@ -392,18 +487,26 @@ async def process_question_9(callback_query: types.CallbackQuery, state: FSMCont
 
         await state.finish()
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
+            chat_id=callback.from_user.id,
             text=I_KNOW_WHO_YOU_ARE,
             reply_markup=inline_keyboard_show_me_result,
         )
-    else:
-        await bot.answer_callback_query(callback_query.id)
+
+    elif cur_state == 'Feedback:feedback':
         await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f'{QUIZ_ALREADY_FINISHED_TEXT}',
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback_query.from_user.id} tried to '
-                     f'answer ({callback_query.data}) the 9th question again in already finished quiz.')
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state.')
 
 
 # ---------------------

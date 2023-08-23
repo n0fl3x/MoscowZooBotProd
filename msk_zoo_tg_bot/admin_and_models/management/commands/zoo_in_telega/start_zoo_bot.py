@@ -32,7 +32,7 @@ random_messages_handler.register_rand_msg_handler(disp=dp)
 # ---------
 # Finishing
 async def on_shutdown(dp):
-    logging.warning(f' {datetime.now()} : Shutting down...')
+    logging.info(f' {datetime.now()} : Shutting down...')
 
 
 # --------------

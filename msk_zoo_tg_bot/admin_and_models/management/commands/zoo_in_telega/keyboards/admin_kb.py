@@ -1,5 +1,7 @@
 import aiogram.types
 
+from commands.admin_commands import HELP_ADMIN_COMMAND, STOP_ADMIN_COMMAND
+
 from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton,
@@ -9,12 +11,12 @@ from aiogram.types import (
 
 
 help_btn = InlineKeyboardButton(
-    text='help',
-    callback_data='help',
+    text=HELP_ADMIN_COMMAND,
+    callback_data=HELP_ADMIN_COMMAND,
 )
 
 admin_keyboard = InlineKeyboardMarkup(row_width=1).add(help_btn)
 
-stop_keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('/stop'))
+stop_keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton(f'/{STOP_ADMIN_COMMAND}'))
 
 remove_kb = aiogram.types.ReplyKeyboardRemove()

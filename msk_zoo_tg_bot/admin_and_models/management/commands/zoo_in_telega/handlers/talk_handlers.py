@@ -72,7 +72,7 @@ async def help_to_restart_bot_handler(callback: types.CallbackQuery) -> None:
 async def help_to_restart_quiz_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     await start_quiz_inline_button(
-        callback_query=callback,
+        callback=callback,
         state=state,
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
@@ -129,14 +129,14 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
                      f'{callback.from_user.username} can get previous result or start quiz again.')
     else:
         await start_quiz_inline_button(
-            callback_query=callback,
+            callback=callback,
             state=state,
         )
         logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} do not have previous result and started new quiz.')
 
 
-async def show_result_handler(callback: types.CallbackQuery):
+async def show_result_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
 
     result = await check_user_result(user_id=callback.from_user.id)
@@ -170,7 +170,7 @@ async def show_result_handler(callback: types.CallbackQuery):
                  f'{callback.from_user.username} got new result = {animal_name}.')
 
 
-async def after_result_menu_handler(callback: types.CallbackQuery):
+async def after_result_menu_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
 
     if callback.data == 'whats_next':
@@ -179,18 +179,19 @@ async def after_result_menu_handler(callback: types.CallbackQuery):
             text=WHAT_DO_U_WANT,
             reply_markup=inline_keyboard_after_result,
         )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} finished quiz and activated after quiz menu.')
     else:
         await bot.send_message(
             chat_id=callback.from_user.id,
             text=SOMETHING_ELSE,
             reply_markup=inline_keyboard_after_result,
         )
+        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} activated after quiz menu.')
 
-    logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
-                 f'{callback.from_user.username} activated after quiz menu.')
 
-
-async def picture_to_save_handler(callback: types.CallbackQuery):
+async def picture_to_save_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     totem = await check_user_result(user_id=callback.from_user.id)
 
@@ -227,7 +228,7 @@ async def picture_to_save_handler(callback: types.CallbackQuery):
                      f'without completing quiz at least once.')
 
 
-async def care_program_handler(callback: types.CallbackQuery):
+async def care_program_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_photo(
         chat_id=callback.from_user.id,
@@ -239,7 +240,7 @@ async def care_program_handler(callback: types.CallbackQuery):
                  f'{callback.from_user.username} watching care program info.')
 
 
-async def care_program_contacts_handler(callback: types.CallbackQuery):
+async def care_program_contacts_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
@@ -251,7 +252,7 @@ async def care_program_contacts_handler(callback: types.CallbackQuery):
                  f'{callback.from_user.username} watching care program contacts.')
 
 
-async def thats_enough_handler(callback: types.CallbackQuery):
+async def thats_enough_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
     await bot.send_message(
         chat_id=callback.from_user.id,
@@ -262,11 +263,12 @@ async def thats_enough_handler(callback: types.CallbackQuery):
                  f'{callback.from_user.username} ending chat with bot.')
 
 
-async def see_ya_handler(callback: types.CallbackQuery):
+async def see_ya_handler(callback: types.CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query_id=callback.id)
-    await bot.send_message(
+    await bot.send_photo(
         chat_id=callback.from_user.id,
-        text=SEE_YOU,
+        photo='AgACAgIAAxkBAAIK0GTfpcm3p5ZJa6oj6eqZX7MoBmGiAALhyzEb6Cn4SjgIaWUVgvJEAQADAgADcwADMAQ',
+        caption=SEE_YOU,
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                  f'{callback.from_user.username} finished the bot.')
@@ -274,7 +276,7 @@ async def see_ya_handler(callback: types.CallbackQuery):
 
 # ---------------------
 # Handlers registration
-def register_static_command_handlers(disp: Dispatcher):
+def register_static_command_handlers(disp: Dispatcher) -> None:
     disp.register_message_handler(
         help_handler,
         commands=[f'{HELP_COMMAND}'],

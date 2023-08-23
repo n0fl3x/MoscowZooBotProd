@@ -3,12 +3,11 @@
 .env
 
 __pycache__/
-__pycache__
-**/__pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
 .DS_Store
 
 msk_zoo_tg_bot/zoo_bot_db.sqlite3
 
-.DS_Store
+msk_zoo_tg_bot/admin_and_models/management/commands/zoo_in_telega/logs/

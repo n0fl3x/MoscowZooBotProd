@@ -1,19 +1,20 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from commands.feedback_commands import START_FEEDBACK_COMMAND, CANCEL_FEEDBACK_COMMAND
 from text_data.timosha_messages import LEAVE_FEEDBACK_BTN, NO_BTN
 
 
 # Feedback button
 inline_btn_leave_feedback = InlineKeyboardButton(
     text=LEAVE_FEEDBACK_BTN,
-    callback_data='go_feedback',
+    callback_data=START_FEEDBACK_COMMAND,
 )
 
 
 # Cancel feedback
 inline_btn_cancel_feedback = InlineKeyboardButton(
     text=NO_BTN,
-    callback_data='cancel_feedback'
+    callback_data=CANCEL_FEEDBACK_COMMAND,
 )
 
 inline_keyboard_cancel_feedback = InlineKeyboardMarkup().row(inline_btn_cancel_feedback)
