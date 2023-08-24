@@ -15,7 +15,7 @@ help_btn = InlineKeyboardButton(
     callback_data=HELP_ADMIN_COMMAND,
 )
 
-admin_keyboard = InlineKeyboardMarkup(row_width=1).add(help_btn)
+admin_keyboard = InlineKeyboardMarkup().add(help_btn)
 
 stop_keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton(f'/{STOP_ADMIN_COMMAND}'))
 

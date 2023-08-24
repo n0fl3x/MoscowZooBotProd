@@ -42,8 +42,12 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
             await AdminAuthorization.TRUE.set()
             await bot.send_message(
                 chat_id=message.from_user.id,
-                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n" + HELLO_ADMIN,
-                parse_mode="HTML",
+                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n",
+                reply_markup=stop_keyboard,
+            )
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
             logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
@@ -68,8 +72,12 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
             )
             await bot.send_message(
                 chat_id=message.from_user.id,
-                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n" + HELLO_ADMIN,
-                parse_mode="HTML",
+                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n",
+                reply_markup=stop_keyboard,
+            )
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
             logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
@@ -85,8 +93,12 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
             )
             await bot.send_message(
                 chat_id=message.from_user.id,
-                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n" + HELLO_ADMIN,
-                parse_mode="HTML",
+                text=f"<b>Привет, {username if username else 'Admin'}!</b>\n",
+                reply_markup=stop_keyboard,
+            )
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
             logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
@@ -112,7 +124,6 @@ async def admin_help_handler(callback: types.CallbackQuery, state: FSMContext) -
         await bot.send_message(
             chat_id=callback.from_user.id,
             text=HELP_ADMIN,
-            parse_mode="HTML",
             reply_markup=stop_keyboard,
         )
         logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
@@ -137,7 +148,6 @@ async def admin_scan_photo_handler(message: types.Message) -> None:
     await bot.send_message(
         chat_id=message.chat.id,
         text='<b>ID этой картинки:</b>',
-        parse_mode="HTML",
         reply_markup=stop_keyboard,
     )
     await bot.send_photo(
@@ -150,7 +160,7 @@ async def admin_scan_photo_handler(message: types.Message) -> None:
     )
     await message.delete()
     logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
-                 f'{message.from_user.username} scanned photo for ID.')
+                 f'{message.from_user.username} scanned photo for ID in admin panel.')
 
 
 async def admin_scan_document_handler(message: types.Message) -> None:
@@ -161,7 +171,6 @@ async def admin_scan_document_handler(message: types.Message) -> None:
     await bot.send_message(
         chat_id=message.chat.id,
         text='<b>ID этого файла:</b>',
-        parse_mode="HTML",
         reply_markup=stop_keyboard,
     )
     await bot.send_document(
@@ -174,7 +183,7 @@ async def admin_scan_document_handler(message: types.Message) -> None:
     )
     await message.delete()
     logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
-                 f'{message.from_user.username} scanned document for ID.')
+                 f'{message.from_user.username} scanned document for ID in admin panel.')
 
 
 async def admin_panel_stop_handler(message: types.Message, state: FSMContext) -> None:

@@ -16,7 +16,10 @@ load_dotenv(find_dotenv())
 # Bot settings
 storage = MemoryStorage()
 
-bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
+bot = Bot(
+    token=os.getenv('TELEGRAM_TOKEN'),
+    parse_mode='HTML',
+)
 
 dp = Dispatcher(
     bot=bot,

@@ -22,11 +22,11 @@ async def on_startup(dp):
 
 # --------
 # Handlers
-talk_handlers.register_static_command_handlers(disp=dp)
-quiz_handlers.register_quiz_handlers(disp=dp)
 feedback_handlers.register_feedback_handlers(disp=dp)
 admin_panel_handlers.register_admin_panel_handlers(disp=dp)
 random_messages_handler.register_rand_msg_handler(disp=dp)
+talk_handlers.register_static_command_handlers(disp=dp)
+quiz_handlers.register_quiz_handlers(disp=dp)
 
 
 # ---------

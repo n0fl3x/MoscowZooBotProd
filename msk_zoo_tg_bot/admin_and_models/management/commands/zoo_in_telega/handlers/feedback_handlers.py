@@ -5,7 +5,8 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from bot_settings import bot
-from handlers.talk_handlers import after_result_menu_handler
+from commands.admin_commands import START_ADMIN_COMMAND
+from handlers.admin_panel_handlers import admin_panel_start_handler
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback
 from database.quiz_result_db import check_user_result
 from keyboards.talk_kb import inline_keyboard_thank_you
@@ -15,7 +16,6 @@ from states.feedback_states import Feedback
 from filters.feedback_filters import (
     cancel_feedback_inline_btn_filter,
     start_feedback_inline_btn_filter,
-    process_feedback_filter,
 )
 
 from database.feedback_db import (
@@ -33,6 +33,19 @@ from text_data.feedback_messages_text import (
     CANT_FEEDBACK_WITHOUT_QUIZ,
     QUIT_ADMIN_TO_LEAVE_FEEDBACK_TEXT,
     ADMIN_STATE_NOT_FEEDBACK,
+)
+
+from commands.static_commands import (
+    START_COMMAND,
+    HELP_COMMAND,
+    CONTACTS_COMMAND,
+)
+
+from handlers.talk_handlers import (
+    after_result_menu_handler,
+    start_handler,
+    help_handler,
+    contacts_handler,
 )
 
 
@@ -146,6 +159,41 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
     """Функция обработки отзыва."""
 
     if message.text:
+
+        if message.text == f'/{START_COMMAND}':
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
+            )
+            await state.reset_state()
+            await start_handler(message=message)
+            return
+
+        if message.text == f'/{HELP_COMMAND}':
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
+            )
+            await state.reset_state()
+            await help_handler(message=message)
+            return
+
+        if message.text == f'/{START_ADMIN_COMMAND}':
+            await admin_panel_start_handler(
+                message=message,
+                state=state,
+            )
+            return
+
+        if message.text == f'/{CONTACTS_COMMAND}':
+            await bot.send_message(
+                chat_id=message.from_user.id,
+                text=FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
+            )
+            await state.reset_state()
+            await contacts_handler(message=message)
+            return
+
         user_id = message.from_user.id
         username = message.from_user.username
         text = message.text
@@ -173,7 +221,7 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
         await bot.send_message(
             chat_id=message.chat.id,
             text=DONT_UNDERSTAND_FEEDBACK,
-            # reply_markup=inline_keyboard_cancel_feedback,
+            reply_markup=inline_keyboard_cancel_feedback,
         )
         logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
                      f'{message.from_user.username} trying to crete invalid feedback '
@@ -195,7 +243,6 @@ def register_feedback_handlers(disp: Dispatcher) -> None:
     )
     disp.register_message_handler(
         process_feedback_handler,
-        process_feedback_filter,
         content_types=types.ContentTypes.ANY,
-        state=Feedback.feedback,
+        state='Feedback:feedback',
     )

@@ -18,11 +18,3 @@ async def start_feedback_inline_btn_filter(callback_query: types.CallbackQuery):
 async def cancel_feedback_inline_btn_filter(callback_query: types.CallbackQuery):
     if callback_query.data == CANCEL_FEEDBACK_COMMAND:
         return True
-
-
-async def process_feedback_filter(message: types.Message):
-    if message.text != f'/{START_COMMAND}' and \
-            message.text != f'/{HELP_COMMAND}' and \
-            message.text != f'/{START_ADMIN_COMMAND}' and \
-            message.text != f'/{CONTACTS_COMMAND}':
-        return True

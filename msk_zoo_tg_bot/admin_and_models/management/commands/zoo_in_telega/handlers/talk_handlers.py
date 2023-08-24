@@ -84,18 +84,22 @@ async def contacts_handler(message: types.Message) -> None:
         chat_id=message.chat.id,
         text=CONTACTS,
         reply_markup=inline_keyboard_thank_you,
-        parse_mode='HTML',
     )
     logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} want to see contacts by help menu button.')
 
 
 async def start_handler(message: types.Message) -> None:
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text='В данный момент ведётся доработка функционала данного бота, '
+             'поэтому иногда могут наблюдаться перебои в его работе.\n'
+             'Приносим свои извинения.',
+    )
     await bot.send_photo(
         chat_id=message.chat.id,
         photo='AgACAgIAAxkBAAIKx2TfpTBifqDEusvXAAHkWGScwn-rOAAC0tIxGzd1AAFLG7N9QTErez8BAAMCAANzAAMwBA',
         caption=HELLO_MSG,
-        parse_mode='HTML',
         reply_markup=inline_keyboard_start_msg,
     )
     logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
@@ -155,7 +159,6 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        parse_mode='HTML',
         text=result_text,
     )
     await bot.send_message(
@@ -163,7 +166,6 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
         text=f"""В Московском зоопарке представителем этого вида является {nickname}. """
              f"""О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать """
              f"""<b><a href='{animal_url}'>тут</a></b>.""",
-        parse_mode='HTML',
         reply_markup=inline_keyboard_whats_next,
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
@@ -235,7 +237,6 @@ async def care_program_handler(callback: types.CallbackQuery) -> None:
         photo='AgACAgIAAxkBAAIKzWTfpaGdaY8MlzBsdHk9Re-OWpU4AALgyzEb6Cn4StQIfF0AARrflwEAAwIAA3MAAzAE',
         caption=CLUB_FRIENDS_INFO,
         reply_markup=inline_keyboard_care_program,
-        parse_mode='HTML',
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                  f'{callback.from_user.username} watching care program info.')
@@ -246,7 +247,6 @@ async def care_program_contacts_handler(callback: types.CallbackQuery) -> None:
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=CONTACTS,
-        parse_mode='HTML',
         reply_markup=inline_keyboard_thank_you,
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
