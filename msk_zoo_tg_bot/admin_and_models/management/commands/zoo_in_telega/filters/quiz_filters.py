@@ -1,5 +1,6 @@
 from aiogram import types
 
+from commands.quiz_commands import CONTINUE_QUIZ_COMMAND
 from text_data.quiz_q_and_a import answers
 
 
@@ -75,4 +76,9 @@ async def question_filter_9(callback_query: types.CallbackQuery):
             or callback_query.data == answers[8][1] \
             or callback_query.data == answers[8][2] \
             or callback_query.data == answers[8][3]:
+        return True
+
+
+async def continue_quiz_filter(callback_query: types.CallbackQuery):
+    if callback_query.data == CONTINUE_QUIZ_COMMAND:
         return True

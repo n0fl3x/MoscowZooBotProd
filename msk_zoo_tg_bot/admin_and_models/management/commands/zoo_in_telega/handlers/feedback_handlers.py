@@ -6,8 +6,9 @@ from aiogram.dispatcher import FSMContext
 
 from bot_settings import bot
 from commands.admin_commands import START_ADMIN_COMMAND
+from commands.feedback_commands import CANCEL_QUIZ_TO_GO_FEEDBACK_COMMAND
 from handlers.admin_panel_handlers import admin_panel_start_handler
-from keyboards.feedback_kb import inline_keyboard_cancel_feedback
+from keyboards.feedback_kb import inline_keyboard_cancel_feedback, inline_keyboard_cancel_quiz_to_start_fb
 from database.quiz_result_db import check_user_result
 from keyboards.talk_kb import inline_keyboard_thank_you
 from text_data.timosha_messages import TYPE_YOUR_FEEDBACK, THANKS_FOR_FEEDBACK
@@ -30,9 +31,10 @@ from text_data.feedback_messages_text import (
     FEEDBACK_STATE_CANCEL_COMMAND_TEXT,
     FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
     DONT_UNDERSTAND_FEEDBACK,
-    CANT_FEEDBACK_WITHOUT_QUIZ,
+    DIDNT_FINISH_QUIZ,
     QUIT_ADMIN_TO_LEAVE_FEEDBACK_TEXT,
     ADMIN_STATE_NOT_FEEDBACK,
+    CANT_FEEDBACK_WITHOUT_QUIZ,
 )
 
 from commands.static_commands import (
@@ -91,13 +93,25 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                          f'Need to deactivate admin panel.')
 
         else:
-            await bot.send_message(
-                chat_id=callback.from_user.id,
-                text=CANT_FEEDBACK_WITHOUT_QUIZ,
-            )
-            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
-                         f'{callback.from_user.username} trying to crete a new feedback '
-                         f'without finishing/cancelling current quiz.')
+
+            if callback.data == CANCEL_QUIZ_TO_GO_FEEDBACK_COMMAND:
+                await state.reset_state()
+                await start_feedback_inline_btn_handler(
+                    callback=callback,
+                    state=state,
+                )
+                logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                             f'{callback.from_user.username} finished current quiz to crete a new feedback ')
+
+            else:
+                await bot.send_message(
+                    chat_id=callback.from_user.id,
+                    text=DIDNT_FINISH_QUIZ,
+                    reply_markup=inline_keyboard_cancel_quiz_to_start_fb,
+                )
+                logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                             f'{callback.from_user.username} need to cancel or finish current '
+                             f'quiz to leave feedback.')
 
     else:
         await bot.send_message(

@@ -23,6 +23,9 @@ from text_data.quiz_messages_text import (
     FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
     QUIT_ADMIN_TO_START_QUIZ_TEXT,
     QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
+    DIDNT_QUIZ, ADMIN_MODE_NOT_QUIZ,
+    FEEDBACK_STATE_NOT_QUIZ,
+    GO_ON_QUIZ,
 )
 
 from filters.quiz_filters import (
@@ -35,7 +38,7 @@ from filters.quiz_filters import (
     question_filter_7,
     question_filter_8,
     question_filter_9,
-    start_quiz_inline_btn_filter,
+    start_quiz_inline_btn_filter, continue_quiz_filter,
 )
 
 from keyboards.quiz_kb import (
@@ -509,6 +512,44 @@ async def process_question_9(callback: types.CallbackQuery, state: FSMContext) -
                      f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state.')
 
 
+async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext) -> None:
+    await bot.answer_callback_query(callback_query_id=callback.id)
+    cur_state = await state.get_state()
+
+    if not cur_state:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=DIDNT_QUIZ,
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to continue quiz in {cur_state} state.')
+
+    elif cur_state == 'AdminAuthorization:TRUE':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=ADMIN_MODE_NOT_QUIZ,
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to continue quiz in {cur_state} state. '
+                     f'Need to deactivate admin panel.')
+
+    elif cur_state == 'Feedback:feedback':
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=FEEDBACK_STATE_NOT_QUIZ,
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} tried to continue quiz in {cur_state} state.')
+
+    else:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=GO_ON_QUIZ,
+        )
+        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+                     f'{callback.from_user.username} continued quiz in {cur_state} state.')
+
+
 # ---------------------
 # Handlers registration
 def register_quiz_handlers(disp: Dispatcher) -> None:
@@ -560,5 +601,10 @@ def register_quiz_handlers(disp: Dispatcher) -> None:
     disp.register_callback_query_handler(
         process_question_9,
         question_filter_9,
+        state='*',
+    )
+    disp.register_callback_query_handler(
+        continue_quiz_handler,
+        continue_quiz_filter,
         state='*',
     )
