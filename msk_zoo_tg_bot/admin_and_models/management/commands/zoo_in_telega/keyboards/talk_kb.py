@@ -18,10 +18,10 @@ from text_data.timosha_messages import (
     CONTACTS_BTN,
     THANK_YOU_BTN,
     THANKS4SAVE_BTN,
-    CONTACTS_THANKS_BTN,
     VERY_BEGINING,
     FROM_QUIZ,
     NEXT_TIME,
+    COOL_BTN,
 )
 
 
@@ -135,7 +135,7 @@ inline_keyboard_after_result = InlineKeyboardMarkup().\
 
 # ---
 inline_btn_thank_you_for_feedback = InlineKeyboardButton(
-    text=CONTACTS_THANKS_BTN,
+    text=COOL_BTN,
     callback_data='thank_you',
 )
 

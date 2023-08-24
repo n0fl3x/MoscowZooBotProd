@@ -6,8 +6,13 @@ from aiogram.dispatcher import FSMContext
 
 from bot_settings import bot
 from database.quiz_result_db import check_user_result, get_db_animal
-from commands.static_commands import START_COMMAND, HELP_COMMAND, CONTACTS_COMMAND
 from handlers.quiz_handlers import start_quiz_inline_button
+
+from commands.static_commands import (
+    START_COMMAND,
+    HELP_COMMAND,
+    CONTACTS_COMMAND,
+)
 
 from filters.bot_talk_filters import (
     dont_want_quiz_filter,
@@ -102,8 +107,8 @@ async def start_handler(message: types.Message) -> None:
         caption=HELLO_MSG,
         reply_markup=inline_keyboard_start_msg,
     )
-    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
-                 f'{message.from_user.username} started/restarted bot.')
+    logging.info(f' {datetime.now()} : User with ID = {message.chat.id} and username = '
+                 f'{message.chat.username} started/restarted bot.')
 
 
 async def dont_want_quiz_handler(callback: types.CallbackQuery) -> None:
