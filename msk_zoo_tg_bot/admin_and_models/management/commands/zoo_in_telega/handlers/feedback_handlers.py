@@ -173,7 +173,7 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
         await bot.send_message(
             chat_id=message.chat.id,
             text=DONT_UNDERSTAND_FEEDBACK,
-            reply_markup=inline_keyboard_cancel_feedback,
+            # reply_markup=inline_keyboard_cancel_feedback,
         )
         logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
                      f'{message.from_user.username} trying to crete invalid feedback '

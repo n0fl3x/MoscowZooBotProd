@@ -18,10 +18,10 @@ from text_data.timosha_messages import (
     CONTACTS_BTN,
     THANK_YOU_BTN,
     THANKS4SAVE_BTN,
-    NO_BTN,
     CONTACTS_THANKS_BTN,
     VERY_BEGINING,
     FROM_QUIZ,
+    NEXT_TIME,
 )
 
 
@@ -170,7 +170,7 @@ inline_btn_care_program_contacts = InlineKeyboardButton(
 )
 
 inline_btn_no_thanks = InlineKeyboardButton(
-    text=NO_BTN,
+    text=NEXT_TIME,
     callback_data='dont_show_care_program_contacts',
 )
 

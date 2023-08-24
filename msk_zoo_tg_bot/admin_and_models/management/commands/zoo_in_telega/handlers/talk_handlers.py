@@ -235,6 +235,7 @@ async def care_program_handler(callback: types.CallbackQuery) -> None:
         photo='AgACAgIAAxkBAAIKzWTfpaGdaY8MlzBsdHk9Re-OWpU4AALgyzEb6Cn4StQIfF0AARrflwEAAwIAA3MAAzAE',
         caption=CLUB_FRIENDS_INFO,
         reply_markup=inline_keyboard_care_program,
+        parse_mode='HTML',
     )
     logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
                  f'{callback.from_user.username} watching care program info.')
