@@ -95,12 +95,12 @@ async def contacts_handler(message: types.Message) -> None:
 
 
 async def start_handler(message: types.Message) -> None:
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text='В данный момент ведётся доработка функционала данного бота, '
-             'поэтому иногда могут наблюдаться перебои в его работе.\n'
-             'Приносим свои извинения.',
-    )
+    # await bot.send_message(
+    #     chat_id=message.chat.id,
+    #     text='В данный момент ведётся доработка функционала данного бота, '
+    #          'поэтому иногда могут наблюдаться перебои в его работе.\n'
+    #          'Приносим свои извинения.',
+    # )
     await bot.send_photo(
         chat_id=message.chat.id,
         photo='AgACAgIAAxkBAAIKx2TfpTBifqDEusvXAAHkWGScwn-rOAAC0tIxGzd1AAFLG7N9QTErez8BAAMCAANzAAMwBA',
