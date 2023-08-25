@@ -96,7 +96,6 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
             chat_id=callback.from_user.id,
             text=questions[0],
             reply_markup=inline_keyboard_1,
-            parse_mode='HTML',
         )
         await CurrentQuestion.question_1.set()
 
@@ -124,7 +123,6 @@ async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[1],
             reply_markup=inline_keyboard_2,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -168,7 +166,6 @@ async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[2],
             reply_markup=inline_keyboard_3,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -212,7 +209,6 @@ async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[3],
             reply_markup=inline_keyboard_4,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -256,7 +252,6 @@ async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[4],
             reply_markup=inline_keyboard_5,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -300,7 +295,6 @@ async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[5],
             reply_markup=inline_keyboard_6,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -344,7 +338,6 @@ async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[6],
             reply_markup=inline_keyboard_7,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -388,7 +381,6 @@ async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[7],
             reply_markup=inline_keyboard_8,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -432,7 +424,6 @@ async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=questions[8],
             reply_markup=inline_keyboard_9,
-            parse_mode='HTML',
         )
         await CurrentQuestion.next()
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
@@ -548,6 +539,69 @@ async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext
         )
         logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} continued quiz in {cur_state} state.')
+
+        if cur_state == 'CurrentQuestion:question_1':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[0],
+                reply_markup=inline_keyboard_1,
+            )
+
+        if cur_state == 'CurrentQuestion:question_2':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[1],
+                reply_markup=inline_keyboard_2,
+            )
+
+        if cur_state == 'CurrentQuestion:question_3':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[2],
+                reply_markup=inline_keyboard_3,
+            )
+
+        if cur_state == 'CurrentQuestion:question_4':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[3],
+                reply_markup=inline_keyboard_4,
+            )
+
+        if cur_state == 'CurrentQuestion:question_5':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[4],
+                reply_markup=inline_keyboard_5,
+            )
+
+        if cur_state == 'CurrentQuestion:question_6':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[5],
+                reply_markup=inline_keyboard_6,
+            )
+
+        if cur_state == 'CurrentQuestion:question_7':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[6],
+                reply_markup=inline_keyboard_7,
+            )
+
+        if cur_state == 'CurrentQuestion:question_8':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[7],
+                reply_markup=inline_keyboard_8,
+            )
+
+        if cur_state == 'CurrentQuestion:question_9':
+            await bot.send_message(
+                chat_id=callback.from_user.id,
+                text=questions[8],
+                reply_markup=inline_keyboard_9,
+            )
 
 
 # ---------------------
