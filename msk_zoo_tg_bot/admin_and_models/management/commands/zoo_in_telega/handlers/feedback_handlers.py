@@ -10,7 +10,7 @@ from commands.feedback_commands import CANCEL_QUIZ_TO_GO_FEEDBACK_COMMAND
 from handlers.admin_panel_handlers import admin_panel_start_handler
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback, inline_keyboard_cancel_quiz_to_start_fb
 from database.quiz_result_db import check_user_result
-from keyboards.talk_kb import inline_keyboard_thank_you
+from keyboards.talk_kb import inline_keyboard_thank_you, inline_keyboard_welp
 from text_data.timosha_messages import TYPE_YOUR_FEEDBACK, THANKS_FOR_FEEDBACK
 from states.feedback_states import Feedback
 
@@ -69,7 +69,8 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                 reply_markup=inline_keyboard_cancel_feedback,
             )
             await Feedback.feedback.set()
-            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {callback.from_user.id} and username = '
                          f'{callback.from_user.username} trying to crete a new feedback at {cur_state} state.')
 
         elif cur_state == 'Feedback:feedback':
@@ -78,7 +79,8 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                 text=FEEDBACK_STATE_ALREADY,
                 reply_markup=inline_keyboard_cancel_feedback,
             )
-            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {callback.from_user.id} and username = '
                          f'{callback.from_user.username} trying to crete a new feedback '
                          f'while in {cur_state} state.')
 
@@ -87,7 +89,8 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                 chat_id=callback.from_user.id,
                 text=QUIT_ADMIN_TO_LEAVE_FEEDBACK_TEXT,
             )
-            logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {callback.from_user.id} and username = '
                          f'{callback.from_user.username} trying to crete a new feedback '
                          f'while in {cur_state} state. '
                          f'Need to deactivate admin panel.')
@@ -100,7 +103,8 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                     callback=callback,
                     state=state,
                 )
-                logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                logging.info(f' {datetime.now()} :\n'
+                             f'User with ID = {callback.from_user.id} and username = '
                              f'{callback.from_user.username} finished current quiz to crete a new feedback ')
 
             else:
@@ -109,7 +113,8 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
                     text=DIDNT_FINISH_QUIZ,
                     reply_markup=inline_keyboard_cancel_quiz_to_start_fb,
                 )
-                logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+                logging.info(f' {datetime.now()} :\n'
+                             f'User with ID = {callback.from_user.id} and username = '
                              f'{callback.from_user.username} need to cancel or finish current '
                              f'quiz to leave feedback.')
 
@@ -117,8 +122,10 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
         await bot.send_message(
             chat_id=callback.from_user.id,
             text=CANT_FEEDBACK_WITHOUT_QUIZ,
+            reply_markup=inline_keyboard_welp,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} trying to crete a new feedback at {cur_state} state '
                      f'without at least once completed quiz.')
 
@@ -134,7 +141,8 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
             chat_id=callback.from_user.id,
             text=FEEDBACK_CANCEL_NONE_STATE_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to cancel '
                      f'feedback at {cur_state} state by inline button.')
 
@@ -145,7 +153,8 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
         )
         await state.reset_state()
         await after_result_menu_handler(callback=callback)
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} canceled '
                      f'{cur_state} state by inline button.')
 
@@ -154,7 +163,8 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
             chat_id=callback.from_user.id,
             text=ADMIN_STATE_NOT_FEEDBACK,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to cancel feedback '
                      f'while in {cur_state} state. '
                      f'Need to deactivate admin panel.')
@@ -164,7 +174,8 @@ async def cancel_feedback_inline_button_handler(callback: types.CallbackQuery, s
             chat_id=callback.from_user.id,
             text=FEEDBACK_CANCEL_QUIZ_STATE_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to cancel '
                      f'feedback at {cur_state} state by inline button.')
 
@@ -227,7 +238,8 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
             text=THANKS_FOR_FEEDBACK,
             reply_markup=inline_keyboard_thank_you,
         )
-        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {message.from_user.id} and username = '
                      f'{message.from_user.username} added new feedback:\n'
                      f'{message.text}')
 
@@ -237,7 +249,8 @@ async def process_feedback_handler(message: types.Message, state: FSMContext) ->
             text=DONT_UNDERSTAND_FEEDBACK,
             reply_markup=inline_keyboard_cancel_feedback,
         )
-        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {message.from_user.id} and username = '
                      f'{message.from_user.username} trying to crete invalid feedback '
                      f'with {message.content_type} type.')
 

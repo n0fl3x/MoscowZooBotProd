@@ -49,7 +49,8 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
             to_insert,
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : New result = {animal} of user with ID = {user_id} and '
+        logging.info(f' {datetime.now()} :\n'
+                     f'New result = {animal} of user with ID = {user_id} and '
                      f'username = {username} successfully added to database.')
 
 
@@ -64,7 +65,8 @@ async def delete_old_result(state: FSMContext) -> None:
             WHERE res_user_id = '{user_id}'"""
         )
         connect.commit()
-        logging.info(f' {datetime.now()} : Old result of user with ID = {user_id} successfully '
+        logging.info(f' {datetime.now()} :\n'
+                     f'Old result of user with ID = {user_id} successfully '
                      f'deleted from database.')
 
 

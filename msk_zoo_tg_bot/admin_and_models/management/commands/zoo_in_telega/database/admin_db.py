@@ -21,10 +21,12 @@ async def tg_admin_auth(tg_username: str, user_id: int) -> bool:
     ).fetchone()
 
     if db_admin:
-        logging.info(f' {datetime.now()} : User with ID = {user_id} and username = {tg_username} '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {user_id} and username = {tg_username} '
                      f'successfully founded as admin in database.')
         return True
 
-    logging.info(f' {datetime.now()} : User with ID = {user_id} and username = {tg_username} '
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {user_id} and username = {tg_username} '
                  f'did not found as admin in database.')
     return False

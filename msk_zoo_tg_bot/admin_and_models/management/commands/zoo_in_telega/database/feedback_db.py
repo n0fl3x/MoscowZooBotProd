@@ -46,7 +46,8 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
         to_insert,
     )
     connect.commit()
-    logging.info(f' {datetime.now()} : New feedback from user with ID = {user_id} and username = {username} '
+    logging.info(f' {datetime.now()} :\n'
+                 f'New feedback from user with ID = {user_id} and username = {username} '
                  f'successfully added to database.')
 
 
@@ -58,7 +59,8 @@ async def delete_old_feedback(user_id: int) -> None:
         WHERE fb_user_id = '{user_id}'"""
     )
     connect.commit()
-    logging.info(f' {datetime.now()} : Old feedback from user with ID = {user_id} successfully '
+    logging.info(f' {datetime.now()} :\n'
+                 f'Old feedback from user with ID = {user_id} successfully '
                  f'deleted from database.')
 
 
@@ -73,9 +75,11 @@ async def check_user_feedback(user_id: int) -> bool:
     connect.commit()
 
     if fb:
-        logging.info(f' {datetime.now()} : Successfully found feedback from user with ID = {user_id} '
+        logging.info(f' {datetime.now()} :\n'
+                     f'Successfully found feedback from user with ID = {user_id} '
                      f'in database.')
         return True
 
-    logging.info(f' {datetime.now()} : User with ID = {user_id} do not have feedback in database yet.')
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {user_id} do not have feedback in database yet.')
     return False

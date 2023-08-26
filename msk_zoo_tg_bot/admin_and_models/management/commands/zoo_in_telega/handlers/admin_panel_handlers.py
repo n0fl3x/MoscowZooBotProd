@@ -50,7 +50,8 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
                 text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
-            logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {message.from_user.id} and username = '
                          f'{username} successfully activated admin panel '
                          f'from {cur_state} state.')
 
@@ -59,7 +60,8 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
                 chat_id=message.from_user.id,
                 text=ADMIN_STATE_ALREADY_TEXT,
             )
-            logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {message.from_user.id} and username = '
                          f'{username} tried to activate admin panel '
                          f'while already in {cur_state} state.')
 
@@ -80,7 +82,8 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
                 text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
-            logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {message.from_user.id} and username = '
                          f'{username} activated admin panel '
                          f'and cancelled {cur_state} state.')
 
@@ -101,7 +104,8 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
                 text=HELLO_ADMIN,
                 reply_markup=admin_keyboard,
             )
-            logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID = {message.from_user.id} and username = '
                          f'{username} activated admin panel '
                          f'and cancelled {cur_state} state.')
 
@@ -110,7 +114,8 @@ async def admin_panel_start_handler(message: types.Message, state: FSMContext) -
             chat_id=message.from_user.id,
             text=NOT_ADMIN,
         )
-        logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {message.from_user.id} and username = '
                      f'{username} unsuccessfully tried to activate admin panel.')
 
 
@@ -126,7 +131,8 @@ async def admin_help_handler(callback: types.CallbackQuery, state: FSMContext) -
             text=HELP_ADMIN,
             reply_markup=stop_keyboard,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} used help button of admin panel in {cur_state} state.')
 
     else:
@@ -134,7 +140,8 @@ async def admin_help_handler(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=NOT_IN_ADMIN_STATE,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to use help button of admin panel '
                      f'while in {cur_state} state.')
 
@@ -159,7 +166,8 @@ async def admin_scan_photo_handler(message: types.Message) -> None:
         text=f"{file_info.file_id}",
     )
     await message.delete()
-    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} scanned photo for ID in admin panel.')
 
 
@@ -182,7 +190,8 @@ async def admin_scan_document_handler(message: types.Message) -> None:
         text=f"{file_info.file_id}",
     )
     await message.delete()
-    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} scanned document for ID in admin panel.')
 
 
@@ -195,7 +204,8 @@ async def admin_panel_stop_handler(message: types.Message, state: FSMContext) ->
         text=QUIT_ADMIN_PANEL_TEXT,
         reply_markup=remove_kb,
     )
-    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} quit admin panel.')
 
 
@@ -203,7 +213,8 @@ async def admin_delete_spam_handler(message: types.Message) -> None:
     """Анти-спам в режиме администратора."""
 
     await message.delete()
-    logging.info(f' {datetime.now()} : User with ID = {message.from_user.id} and username = '
+    logging.info(f' {datetime.now()} :\n'
+                 f'User with ID = {message.from_user.id} and username = '
                  f'{message.from_user.username} send useless message with {message.content_type} type '
                  f'in admin panel.')
 

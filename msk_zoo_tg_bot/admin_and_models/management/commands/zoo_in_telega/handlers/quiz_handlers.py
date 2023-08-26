@@ -65,13 +65,15 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to start new quiz while in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
     else:
         if not cur_state:
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID {callback.from_user.id} and username = '
                          f'{callback.from_user.username} started new quiz from {cur_state} state.')
 
         elif cur_state == 'Feedback:feedback':
@@ -80,7 +82,8 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
                 text=FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
             )
             await state.reset_state()
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID {callback.from_user.id} and username = '
                          f'{callback.from_user.username} cancelled {cur_state} state and started new quiz.')
 
         else:
@@ -89,7 +92,8 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
                 text=QUIZ_RESTART_TEXT,
             )
             await state.reset_state()
-            logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+            logging.info(f' {datetime.now()} :\n'
+                         f'User with ID {callback.from_user.id} and username = '
                          f'{callback.from_user.username} cancelled {cur_state} state and restarted quiz.')
 
         await bot.send_message(
@@ -110,7 +114,8 @@ async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -125,7 +130,8 @@ async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_2,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 1st question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -133,7 +139,8 @@ async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state.')
 
     else:
@@ -141,7 +148,8 @@ async def process_question_1(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 1st quiz question in {cur_state} state.')
 
 
@@ -155,7 +163,8 @@ async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -168,7 +177,8 @@ async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_3,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 2nd question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -176,7 +186,8 @@ async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state.')
 
     else:
@@ -184,7 +195,8 @@ async def process_question_2(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 2nd quiz question in {cur_state} state.')
 
 
@@ -198,7 +210,8 @@ async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -211,7 +224,8 @@ async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_4,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 3rd question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -219,7 +233,8 @@ async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state.')
 
     else:
@@ -227,7 +242,8 @@ async def process_question_3(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 3rd quiz question in {cur_state} state.')
 
 
@@ -241,7 +257,8 @@ async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -254,7 +271,8 @@ async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_5,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 4th question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -262,7 +280,8 @@ async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state.')
 
     else:
@@ -270,7 +289,8 @@ async def process_question_4(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 4th quiz question in {cur_state} state.')
 
 
@@ -284,7 +304,8 @@ async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -297,7 +318,8 @@ async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_6,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 5th question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -305,7 +327,8 @@ async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state.')
 
     else:
@@ -313,7 +336,8 @@ async def process_question_5(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 5th quiz question in {cur_state} state.')
 
 
@@ -327,7 +351,8 @@ async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -340,7 +365,8 @@ async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_7,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 6th question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -348,7 +374,8 @@ async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state.')
 
     else:
@@ -356,7 +383,8 @@ async def process_question_6(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 6th quiz question in {cur_state} state.')
 
 
@@ -370,7 +398,8 @@ async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -383,7 +412,8 @@ async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_8,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 7th question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -391,7 +421,8 @@ async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state.')
 
     else:
@@ -399,7 +430,8 @@ async def process_question_7(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 7th quiz question in {cur_state} state.')
 
 
@@ -413,7 +445,8 @@ async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -426,7 +459,8 @@ async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -
             reply_markup=inline_keyboard_9,
         )
         await CurrentQuestion.next()
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 8th question.')
 
     elif cur_state == 'Feedback:feedback':
@@ -434,7 +468,8 @@ async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state.')
 
     else:
@@ -442,7 +477,8 @@ async def process_question_8(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 8th quiz question in {cur_state} state.')
 
 
@@ -458,12 +494,14 @@ async def process_question_9(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=QUIT_ADMIN_TO_START_QUIZ_TEXT,
         )
-        logging.info(f' {datetime.now()} : User with ID = {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID = {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
     elif cur_state == 'CurrentQuestion:question_9':
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} answered ({callback.data}) the 9th question.')
         async with state.proxy() as data:
             data['9th_question'] = callback.data
@@ -491,7 +529,8 @@ async def process_question_9(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_CANCEL_FEEDBACK_STATE_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state.')
 
     else:
@@ -499,7 +538,8 @@ async def process_question_9(callback: types.CallbackQuery, state: FSMContext) -
             chat_id=callback.from_user.id,
             text=f'{QUIZ_ALREADY_ANSWERED_TEXT}',
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to answer 9th quiz question in {cur_state} state.')
 
 
@@ -512,7 +552,8 @@ async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext
             chat_id=callback.from_user.id,
             text=DIDNT_QUIZ,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to continue quiz in {cur_state} state.')
 
     elif cur_state == 'AdminAuthorization:TRUE':
@@ -520,7 +561,8 @@ async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext
             chat_id=callback.from_user.id,
             text=ADMIN_MODE_NOT_QUIZ,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to continue quiz in {cur_state} state. '
                      f'Need to deactivate admin panel.')
 
@@ -529,7 +571,8 @@ async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext
             chat_id=callback.from_user.id,
             text=FEEDBACK_STATE_NOT_QUIZ,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} tried to continue quiz in {cur_state} state.')
 
     else:
@@ -537,7 +580,8 @@ async def continue_quiz_handler(callback: types.CallbackQuery, state: FSMContext
             chat_id=callback.from_user.id,
             text=GO_ON_QUIZ,
         )
-        logging.info(f' {datetime.now()} : User with ID {callback.from_user.id} and username = '
+        logging.info(f' {datetime.now()} :\n'
+                     f'User with ID {callback.from_user.id} and username = '
                      f'{callback.from_user.username} continued quiz in {cur_state} state.')
 
         if cur_state == 'CurrentQuestion:question_1':
