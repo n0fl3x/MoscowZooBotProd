@@ -190,7 +190,7 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
             )
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f"""В Московском зоопарке представителем этого вида является {nickname}🥰\n"""
+                text=f"""В Московском зоопарке представителем этого вида является {nickname}🐥 """
                      f"""О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать """
                      f"""<b><a href='{animal_url}'>тут</a></b>👀""",
                 reply_markup=inline_keyboard_whats_next,
