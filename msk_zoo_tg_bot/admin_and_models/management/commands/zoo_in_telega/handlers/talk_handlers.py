@@ -55,6 +55,8 @@ from text_data.timosha_messages import (
     SOMETHING_ELSE,
 )
 
+from text_data.bot_urls import MOSCOW_ZOO_ANIMALS
+
 
 # -----------------
 # Bot talk handlers
@@ -146,8 +148,10 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Я вижу, ты уже проходил опрос🤔\n\nТвое тотемное животное: <b>{animal_name}</b>\n'
-                     f'',
+                text=f'Ты <b>{animal_name}</b>❤️\n\n'
+                     f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
+                     f'можешь найти его на <a href={MOSCOW_ZOO_ANIMALS}>на сайте Московского зоопарка</a>📌\n\n'
+                     f'Хочешь сделать что-нибудь еще?',
                 reply_markup=inline_keyboard_welp,
             )
             logging.info(f' {datetime.now()} :\n'
@@ -208,8 +212,10 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты уже проходил опрос, но похоже твоё тотемное животное {animal_name} было удалено '
-                     f'из моей базы знаний🥺',
+                text=f'Ты <b>{animal_name}</b>❤️\n\n'
+                     f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
+                     f'можешь найти его на <a href={MOSCOW_ZOO_ANIMALS}>на сайте Московского зоопарка</a>📌\n\n'
+                     f'Хочешь сделать что-нибудь еще?',
                 reply_markup=inline_keyboard_welp,
             )
             logging.info(f' {datetime.now()} :\n'
