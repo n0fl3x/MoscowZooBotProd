@@ -31,6 +31,7 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
         username = data.get('username')
         created_at = datetime.now()
         user_id = str(data.get('user_id'))
+
         user_results = data.get('1st_question') + ", " \
             + data.get('2nd_question') + ", " \
             + data.get('3rd_question') + ", " \
@@ -41,7 +42,14 @@ async def insert_new_result(state: FSMContext, animal: str) -> None:
             + data.get('8th_question') + ", " \
             + data.get('9th_question')
 
-        to_insert = (record_id, created_at, user_id, username, animal, user_results)
+        to_insert = (
+            record_id,
+            created_at,
+            user_id,
+            username,
+            animal,
+            user_results,
+        )
 
         curs.execute(
             """INSERT INTO 'admin_and_models_result'
@@ -71,7 +79,8 @@ async def delete_old_result(state: FSMContext) -> None:
 
 
 async def check_user_result(user_id: int) -> list:
-    """Функция для проверки результата пользователя, если он/она уже проходил(-а) опрос хотя бы один раз."""
+    """Функция для проверки результата пользователя,
+    если он/она уже проходил(-а) опрос хотя бы один раз до конца."""
 
     result = curs.execute(
         f"""SELECT * 

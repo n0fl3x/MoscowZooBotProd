@@ -154,16 +154,6 @@ inline_keyboard_thank_you_pic_save = InlineKeyboardMarkup().\
 
 
 # ---
-inline_btn_welp = InlineKeyboardButton(
-    text='Штош',
-    callback_data='welp',
-)
-
-inline_keyboard_welp = InlineKeyboardMarkup().\
-    row(inline_btn_welp)
-
-
-# ---
 inline_btn_care_program_contacts = InlineKeyboardButton(
     text=CONTACTS_BTN,
     callback_data='care_program_contacts',

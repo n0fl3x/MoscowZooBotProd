@@ -34,7 +34,6 @@ from keyboards.talk_kb import (
     inline_keyboard_whats_next,
     inline_keyboard_after_result,
     inline_keyboard_thank_you,
-    inline_keyboard_welp,
     inline_keyboard_care_program,
     inline_keyboard_likewise,
     inline_keyboard_thank_you_pic_save,
@@ -148,11 +147,11 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты <b>{animal_name}</b>❤️\n\n'
+                text=f'Ты <b>{animal_name}</b>❤\n\n'
                      f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
-                     f'можешь найти его на <a href={MOSCOW_ZOO_ANIMALS}>на сайте Московского зоопарка</a>📌\n\n'
+                     f'можешь найти его на <a href="{MOSCOW_ZOO_ANIMALS}">на сайте Московского зоопарка</a>📌\n\n'
                      f'Хочешь сделать что-нибудь еще?',
-                reply_markup=inline_keyboard_welp,
+                reply_markup=inline_keyboard_after_result,
             )
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID = {callback.from_user.id} and username = '
@@ -194,9 +193,9 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
             )
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f"""В Московском зоопарке представителем этого вида является {nickname}🐥 """
-                     f"""О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать """
-                     f"""<b><a href='{animal_url}'>тут</a></b>👀""",
+                text=f"В Московском зоопарке представителем этого вида является {nickname}🐥\n"
+                     f"О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать "
+                     f"<b><a href='{animal_url}'>тут</a></b>👀",
                 reply_markup=inline_keyboard_whats_next,
             )
 
@@ -212,11 +211,11 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты <b>{animal_name}</b>❤️\n\n'
+                text=f'Ты <b>{animal_name}</b>❤\n\n'
                      f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
-                     f'можешь найти его на <a href={MOSCOW_ZOO_ANIMALS}>на сайте Московского зоопарка</a>📌\n\n'
+                     f'можешь найти его на <a href="{MOSCOW_ZOO_ANIMALS}">на сайте Московского зоопарка</a>📌\n\n'
                      f'Хочешь сделать что-нибудь еще?',
-                reply_markup=inline_keyboard_welp,
+                reply_markup=inline_keyboard_after_result,
             )
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID = {callback.from_user.id} and username = '
@@ -226,8 +225,8 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
     else:
         await bot.send_message(
             chat_id=callback.from_user.id,
-            text=NEVER_QUIZ,
-            reply_markup=inline_keyboard_welp,
+            text=NEVER_QUIZ + SOMETHING_ELSE,
+            reply_markup=inline_keyboard_after_result,
         )
         logging.info(f' {datetime.now()} :\n'
                      f'User with ID = {callback.from_user.id} and username = '
@@ -281,9 +280,9 @@ async def picture_to_save_handler(callback: types.CallbackQuery) -> None:
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты уже проходил опрос, но похоже твоё тотемное животное {animal_name} было удалено '
-                     f'из моей базы знаний, и поэтому я не могу дать тебе красивое изображение этого животного🥺',
-                reply_markup=inline_keyboard_welp,
+                text=f'Ты <b>{animal_name}</b> ❤\n'
+                     f'Но я тебе не расскажу о нём 🥺' + SOMETHING_ELSE,
+                reply_markup=inline_keyboard_after_result,
             )
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID = {callback.from_user.id} and username = '
@@ -293,8 +292,8 @@ async def picture_to_save_handler(callback: types.CallbackQuery) -> None:
     else:
         await bot.send_message(
             chat_id=callback.from_user.id,
-            text=NEVER_QUIZ,
-            reply_markup=inline_keyboard_welp,
+            text=NEVER_QUIZ + SOMETHING_ELSE,
+            reply_markup=inline_keyboard_after_result,
         )
         logging.info(f' {datetime.now()} :\n'
                      f'User with ID = {callback.from_user.id} and username = '

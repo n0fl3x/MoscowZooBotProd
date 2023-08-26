@@ -123,12 +123,6 @@ CLUB_FRIENDS_INFO = """
 CONTACTS_BTN = """Контакты💬"""
 
 
-CONTACTS_THANKS_BTN = """Не за что🥰"""
-
-
-NO_BTN = """Нет, спасибо"""
-
-
 CONTACTS = f"""
 🖥️ <i><b><a href="{CLUB_FRIENDS_SITE}">Club Friends</a></b></i> (информация о программе)
 📬 zoofriends@moscowzoo.ru
@@ -178,15 +172,7 @@ FROM_QUIZ = "С начала викторины"
 CHANGED_MY_MIND_BTN = """Я передумал"""
 
 
-COOL_BTN = """Здорово!🤗"""
-
-
 THANKS_BTN = 'Спасибо❤️'
 
 
 NEXT_TIME = """В следующий раз😊"""
-
-
-NO_SUCH_ANIMAL = """
-Похоже 
-"""
