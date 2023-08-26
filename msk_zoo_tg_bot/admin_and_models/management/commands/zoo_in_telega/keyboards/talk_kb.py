@@ -21,7 +21,7 @@ from text_data.timosha_messages import (
     VERY_BEGINING,
     FROM_QUIZ,
     NEXT_TIME,
-    COOL_BTN,
+    THANKS_BTN,
 )
 
 
@@ -135,7 +135,7 @@ inline_keyboard_after_result = InlineKeyboardMarkup().\
 
 # ---
 inline_btn_thank_you_for_feedback = InlineKeyboardButton(
-    text=COOL_BTN,
+    text=THANKS_BTN,
     callback_data='thank_you',
 )
 
