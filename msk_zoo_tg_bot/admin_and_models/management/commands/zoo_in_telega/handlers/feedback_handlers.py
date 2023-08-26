@@ -122,7 +122,6 @@ async def start_feedback_inline_btn_handler(callback: types.CallbackQuery, state
         await bot.send_message(
             chat_id=callback.from_user.id,
             text=CANT_FEEDBACK_WITHOUT_QUIZ + SOMETHING_ELSE,
-            reply_markup=inline_keyboard_after_result,
         )
         logging.info(f' {datetime.now()} :\n'
                      f'User with ID = {callback.from_user.id} and username = '

@@ -56,6 +56,8 @@ from text_data.timosha_messages import (
 
 from text_data.bot_urls import MOSCOW_ZOO_ANIMALS
 
+# from quiz_handlers import process_question_1
+
 
 # -----------------
 # Bot talk handlers
@@ -145,13 +147,9 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
                          f'{callback.from_user.username} can get previous result or start quiz again.')
 
         else:
-            await bot.send_message(
-                chat_id=callback.from_user.id,
-                text=f'Ты <b>{animal_name}</b>❤\n\n'
-                     f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
-                     f'можешь найти его на <a href="{MOSCOW_ZOO_ANIMALS}">на сайте Московского зоопарка</a>📌\n\n'
-                     f'Хочешь сделать что-нибудь еще?',
-                reply_markup=inline_keyboard_after_result,
+            await start_quiz_inline_button(
+                callback=callback,
+                state=state,
             )
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID = {callback.from_user.id} and username = '
@@ -280,8 +278,10 @@ async def picture_to_save_handler(callback: types.CallbackQuery) -> None:
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты <b>{animal_name}</b> ❤\n'
-                     f'Но я тебе не расскажу о нём 🥺' + SOMETHING_ELSE,
+                text=f'Ты <b>{animal_name}</b>❤\n\n'
+                     f'К сожалению, сейчас я не смогу рассказать о твоем тотемном животном больше, но ты всегда '
+                     f'можешь найти его на <a href="{MOSCOW_ZOO_ANIMALS}">на сайте Московского зоопарка</a>📌\n'
+                     + SOMETHING_ELSE,
                 reply_markup=inline_keyboard_after_result,
             )
             logging.info(f' {datetime.now()} :\n'
@@ -293,7 +293,6 @@ async def picture_to_save_handler(callback: types.CallbackQuery) -> None:
         await bot.send_message(
             chat_id=callback.from_user.id,
             text=NEVER_QUIZ + SOMETHING_ELSE,
-            reply_markup=inline_keyboard_after_result,
         )
         logging.info(f' {datetime.now()} :\n'
                      f'User with ID = {callback.from_user.id} and username = '

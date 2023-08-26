@@ -87,10 +87,6 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
                          f'{callback.from_user.username} cancelled {cur_state} state and started new quiz.')
 
         else:
-            await bot.send_message(
-                chat_id=callback.from_user.id,
-                text=QUIZ_RESTART_TEXT,
-            )
             await state.reset_state()
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID {callback.from_user.id} and username = '
