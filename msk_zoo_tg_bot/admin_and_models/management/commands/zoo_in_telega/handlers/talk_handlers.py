@@ -146,8 +146,8 @@ async def check_user_result_handler(callback: types.CallbackQuery, state: FSMCon
         else:
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f'Ты уже проходил опрос, но похоже твоё тотемное животное {animal_name} было удалено '
-                     f'из моей базы знаний🥺',
+                text=f'Я вижу, ты уже проходил опрос🤔\n\nТвое тотемное животное: <b>{animal_name}</b>\n'
+                     f'',
                 reply_markup=inline_keyboard_welp,
             )
             logging.info(f' {datetime.now()} :\n'
@@ -190,9 +190,9 @@ async def show_result_handler(callback: types.CallbackQuery) -> None:
             )
             await bot.send_message(
                 chat_id=callback.from_user.id,
-                text=f"""В Московском зоопарке представителем этого вида является {nickname}. """
+                text=f"""В Московском зоопарке представителем этого вида является {nickname}🥰\n"""
                      f"""О {'ней' if gender else 'нём'} и {'её' if gender else 'его'} сородичах можно почитать """
-                     f"""<b><a href='{animal_url}'>тут</a></b>.""",
+                     f"""<b><a href='{animal_url}'>тут</a></b>👀""",
                 reply_markup=inline_keyboard_whats_next,
             )
 
