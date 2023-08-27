@@ -8,6 +8,7 @@ from bot_settings import bot
 from database.quiz_result_db import check_user_result, get_db_animal
 from handlers.quiz_handlers import start_quiz_inline_button
 from text_data.quiz_messages_text import NEVER_QUIZ
+from text_data.bot_urls import MOSCOW_ZOO_ANIMALS
 
 from commands.static_commands import (
     START_COMMAND,
@@ -53,10 +54,6 @@ from text_data.timosha_messages import (
     CONTACTS,
     SOMETHING_ELSE,
 )
-
-from text_data.bot_urls import MOSCOW_ZOO_ANIMALS
-
-# from quiz_handlers import process_question_1
 
 
 # -----------------

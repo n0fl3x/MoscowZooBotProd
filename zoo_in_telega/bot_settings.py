@@ -31,6 +31,6 @@ dp = Dispatcher(
 # Logging
 logging.basicConfig(
     level=logging.INFO,
-    filename='logs/bot_log.log',
+    # filename='logs/bot_log.log',
 )
 dp.middleware.setup(LoggingMiddleware())

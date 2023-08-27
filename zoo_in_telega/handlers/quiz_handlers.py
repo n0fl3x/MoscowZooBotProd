@@ -71,6 +71,7 @@ async def start_quiz_inline_button(callback: types.CallbackQuery, state: FSMCont
                      f'Need to deactivate admin panel.')
 
     else:
+
         if not cur_state:
             logging.info(f' {datetime.now()} :\n'
                          f'User with ID {callback.from_user.id} and username = '

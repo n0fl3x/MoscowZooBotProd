@@ -10,13 +10,14 @@ from commands.feedback_commands import CANCEL_QUIZ_TO_GO_FEEDBACK_COMMAND
 from handlers.admin_panel_handlers import admin_panel_start_handler
 from keyboards.feedback_kb import inline_keyboard_cancel_feedback, inline_keyboard_cancel_quiz_to_start_fb
 from database.quiz_result_db import check_user_result
-from keyboards.talk_kb import inline_keyboard_thank_you, inline_keyboard_after_result
-from text_data.timosha_messages import TYPE_YOUR_FEEDBACK, THANKS_FOR_FEEDBACK, SOMETHING_ELSE
+from keyboards.talk_kb import inline_keyboard_thank_you
 from states.feedback_states import Feedback
+from filters.feedback_filters import cancel_feedback_inline_btn_filter, start_feedback_inline_btn_filter
 
-from filters.feedback_filters import (
-    cancel_feedback_inline_btn_filter,
-    start_feedback_inline_btn_filter,
+from text_data.timosha_messages import (
+    TYPE_YOUR_FEEDBACK,
+    THANKS_FOR_FEEDBACK,
+    SOMETHING_ELSE,
 )
 
 from database.feedback_db import (

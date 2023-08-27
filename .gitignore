@@ -10,4 +10,4 @@ __pycache__/
 
 msk_zoo_tg_bot/zoo_bot_db.sqlite3
 
-msk_zoo_tg_bot/admin_and_models/management/commands/zoo_in_telega/logs/
+zoo_in_telega/logs/
