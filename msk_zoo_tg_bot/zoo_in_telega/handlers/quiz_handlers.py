@@ -19,7 +19,6 @@ from database.quiz_result_db import (
 
 from text_data.quiz_messages_text import (
     QUIZ_ALREADY_ANSWERED_TEXT,
-    QUIZ_RESTART_TEXT,
     FEEDBACK_CANCEL_FOR_NEW_QUIZ_TEXT,
     QUIT_ADMIN_TO_START_QUIZ_TEXT,
     QUIZ_CANCEL_FEEDBACK_STATE_TEXT,
