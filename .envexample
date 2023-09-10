@@ -1,0 +1,9 @@
+export PYTHONPATH=
+
+export DJANGO_KEY=
+
+export DJANGO_SETTINGS_MODULE=
+
+export TELEGRAM_TOKEN=
+
+export PROXY_URL=
