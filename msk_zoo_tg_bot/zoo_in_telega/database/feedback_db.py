@@ -15,7 +15,7 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
     """Функция для добавления нового отзыва в БД."""
 
     fb_id = curs.execute(
-        """SELECT max(id) 
+        """SELECT MAX(id) 
         FROM 'admin_and_models_feedback'"""
     ).fetchone()[0]
     connect.commit()
@@ -27,9 +27,10 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
 
     created_at = datetime.now()
     user_result = curs.execute(
-        f"""SELECT res_totem_animal 
+        """SELECT res_totem_animal 
         FROM 'admin_and_models_result' 
-        WHERE res_user_id = '{user_id}'"""
+        WHERE res_user_id = ?""",
+        (user_id,)
     ).fetchone()
     connect.commit()
 
@@ -38,7 +39,14 @@ async def insert_new_feedback(user_id: int, username: str, text: str) -> None:
     else:
         animal = user_result[0]
 
-    to_insert = (fb_id, created_at, animal, user_id, username, text)
+    to_insert = (
+        fb_id,
+        created_at,
+        animal,
+        user_id,
+        username,
+        text,
+    )
 
     curs.execute(
         """INSERT INTO 'admin_and_models_feedback'
@@ -55,8 +63,9 @@ async def delete_old_feedback(user_id: int) -> None:
     """Функция для удаления уже существующего отзыва пользователя из БД."""
 
     curs.execute(
-        f"""DELETE FROM 'admin_and_models_feedback' 
-        WHERE fb_user_id = '{user_id}'"""
+        """DELETE FROM 'admin_and_models_feedback' 
+        WHERE fb_user_id = ?""",
+        (user_id,)
     )
     connect.commit()
     logging.info(f' {datetime.now()} :\n'
@@ -68,9 +77,10 @@ async def check_user_feedback(user_id: int) -> bool:
     """Функция для проверки наличия отзыва от текущего пользователя."""
 
     fb = curs.execute(
-        f"""SELECT * 
+        """SELECT * 
         FROM 'admin_and_models_feedback' 
-        WHERE fb_user_id = '{user_id}'"""
+        WHERE fb_user_id = ?""",
+        (user_id,)
     ).fetchone()
     connect.commit()
 

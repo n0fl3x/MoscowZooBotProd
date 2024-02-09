@@ -15,10 +15,12 @@ async def tg_admin_auth(tg_username: str, user_id: int) -> bool:
     """Функция проверки доступа текущего пользователя в админ-панель Telegram."""
 
     db_admin = curs.execute(
-        f"""SELECT *
+        """SELECT *
         FROM 'auth_user'
-        WHERE username = '{tg_username}'"""
+        WHERE username = ?""",
+        (tg_username,)
     ).fetchone()
+    connect.commit()
 
     if db_admin:
         logging.info(f' {datetime.now()} :\n'

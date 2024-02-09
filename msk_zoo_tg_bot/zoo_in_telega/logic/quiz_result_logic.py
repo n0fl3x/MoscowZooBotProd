@@ -8,11 +8,8 @@ from text_data.quiz_q_and_a import answers
 
 
 async def get_totem_animal(proxy_dict: dict) -> str:
-    user_id = proxy_dict.get('user_id')
-    proxy_dict.pop('user_id')
-
-    username = proxy_dict.get('username')
-    proxy_dict.pop('username')
+    user_id = proxy_dict.pop('user_id')
+    username = proxy_dict.pop('username')
 
     params = {
         'суточная активность': 0,
@@ -123,9 +120,7 @@ async def get_totem_animal(proxy_dict: dict) -> str:
 
     animals_with_stats = await get_all_animals_stats()
 
-    glob_diff = {}
-    for animal in animals_with_stats.keys():
-        glob_diff[animal] = 0
+    glob_diff = {animal: 0 for animal in animals_with_stats.keys()}
 
     glob_diff_cnt = 0
     for tupl in animals_with_stats.values():

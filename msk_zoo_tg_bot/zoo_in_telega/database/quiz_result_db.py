@@ -69,8 +69,9 @@ async def delete_old_result(state: FSMContext) -> None:
     async with state.proxy() as data:
         user_id = data.get('user_id')
         curs.execute(
-            f"""DELETE FROM 'admin_and_models_result' 
-            WHERE res_user_id = '{user_id}'"""
+            """DELETE FROM 'admin_and_models_result' 
+            WHERE res_user_id = ?""",
+            (user_id,)
         )
         connect.commit()
         logging.info(f' {datetime.now()} :\n'
@@ -83,9 +84,10 @@ async def check_user_result(user_id: int) -> list:
     если он/она уже проходил(-а) опрос хотя бы один раз до конца."""
 
     result = curs.execute(
-        f"""SELECT * 
+        """SELECT * 
         FROM 'admin_and_models_result' 
-        WHERE res_user_id = '{user_id}'"""
+        WHERE res_user_id = ?""",
+        (user_id,)
     ).fetchone()
     connect.commit()
 
@@ -96,9 +98,10 @@ async def get_db_animal(animal: str) -> list:
     """Функция для поиска нужного животного из БД."""
 
     db_animal_record = curs.execute(
-        f"""SELECT * 
+        """SELECT * 
         FROM 'admin_and_models_animal' 
-        WHERE anim_animal = '{animal}'"""
+        WHERE anim_animal = ?""",
+        (animal,)
     ).fetchone()
     connect.commit()
 

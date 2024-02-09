@@ -19,7 +19,6 @@ storage = MemoryStorage()
 bot = Bot(
     token=os.getenv('TELEGRAM_TOKEN'),
     parse_mode='HTML',
-    # proxy=os.getenv('PROXY_URL'),
 )
 
 dp = Dispatcher(
